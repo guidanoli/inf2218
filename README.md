@@ -1,2 +1,5 @@
-# inf2218
-INF2218 - Computability
+# INF2218 - Computability
+
+## `incbin.jff`
+
+Increments a number in binary representation.
