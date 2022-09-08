@@ -67,27 +67,21 @@
 
 
 /* First part of user prologue.  */
-#line 1 "tm.y"
+#line 1 "/home/a/goliveira/Repos/guidanoli/inf2218/tmlang/src/tm.y"
 
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
 
-  #define OVFLW_ERROR "symbol table overflow"
-  #define MEM_ERROR "could not allocate memory"
-
   // Declare stuff from Flex that Bison needs to know about:
   extern int yylex();
   extern int yyparse();
-  extern void free_tape_names();
   extern FILE *yyin;
   extern int line_num;
 
   void yyerror(const char *s);
-  int tape_count = 0;
-  unsigned int state = 0;
 
-#line 91 "tm.tab.c"
+#line 85 "/home/a/goliveira/Repos/guidanoli/inf2218/tmlang/src/tm.y.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -110,7 +104,7 @@
 #  endif
 # endif
 
-#include "tm.tab.h"
+#include "tm.y.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -506,7 +500,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    45,    45
+       0,    39,    39
 };
 #endif
 
@@ -1063,7 +1057,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1067 "tm.tab.c"
+#line 1061 "/home/a/goliveira/Repos/guidanoli/inf2218/tmlang/src/tm.y.c"
 
       default: break;
     }
@@ -1256,7 +1250,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 46 "tm.y"
+#line 40 "/home/a/goliveira/Repos/guidanoli/inf2218/tmlang/src/tm.y"
 
 
 int main(int argc, char** argv) {
@@ -1279,7 +1273,6 @@ int main(int argc, char** argv) {
   // Parse through the input:
   yyparse();
 
-  free_tape_names();
   return EXIT_SUCCESS;
 }
 
