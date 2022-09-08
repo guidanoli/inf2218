@@ -5,10 +5,14 @@
 
 extern void yyerror(const char *s);
 
+/* POSIX function */
+extern int fileno (FILE *stream);
+
 int line_num = 1;
 %}
 
 ID [a-zA-Z_][a-zA-Z_0-9]*
+CHAR ['].[']
 
 %option noyywrap
 %%
@@ -17,9 +21,26 @@ ID [a-zA-Z_][a-zA-Z_0-9]*
 [\n] { ++line_num; }
 [ \t] ;
 --[^\n]* ;
+"symbols" { return TOKEN_SYMBOLS; }
+"tapes" { return TOKEN_TAPES; }
+"when" { return TOKEN_WHEN; }
+"do" { return TOKEN_DO; }
+"end" { return TOKEN_END; }
+"pass" { return TOKEN_PASS; }
+"if" { return TOKEN_IF; }
+"then" { return TOKEN_THEN; }
+"else" { return TOKEN_ELSE; }
+"<-" { return TOKEN_ARROW; }
+"goto" { return TOKEN_GOTO; }
+"left" { return TOKEN_LEFT; }
+"right" { return TOKEN_RIGHT; }
 {ID} {
 	yylval.terminal.id = tm_memdup(yytext, yyleng+1);
 	return TOKEN_ID;
 }
-. ;
+{CHAR} {
+	yylval.terminal.c = yytext[1];
+	return TOKEN_CHAR;
+}
+. { return yytext[0]; }
 %%

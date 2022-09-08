@@ -3,63 +3,48 @@
   #include <stdlib.h>
   #include <string.h>
 
+  #include "tm_ast.h"
+
   // Declare stuff from Flex that Bison needs to know about:
   extern int yylex();
-  extern int yyparse();
-  extern FILE *yyin;
-  extern int line_num;
-
   void yyerror(const char *s);
+  struct tm_ast_program* root = NULL;
 %}
 
 %token TOKEN_ID
-//%token TOKEN_INTEGER
-//%token TOKEN_REAL
-//%token TOKEN_AS
-//%token TOKEN_ELSE
-//%token TOKEN_FUNCTION
-//%token TOKEN_IF
-//%token TOKEN_NEW
-//%token TOKEN_RETURN
-//%token TOKEN_VAR
-//%token TOKEN_WHILE
-//%token TOKEN_EQ
-//%token TOKEN_NE
-//%token TOKEN_LE
-//%token TOKEN_GE
-//%token TOKEN_AND
-//%token TOKEN_OR
-//%token TOKEN_TYPE
+%token TOKEN_CHAR
+%token TOKEN_SYMBOLS
+%token TOKEN_TAPES
+%token TOKEN_WHEN
+%token TOKEN_DO
+%token TOKEN_END
+%token TOKEN_PASS
+%token TOKEN_IF
+%token TOKEN_THEN
+%token TOKEN_ELSE
+%token TOKEN_ARROW
+%token TOKEN_GOTO
+%token TOKEN_LEFT
+%token TOKEN_RIGHT
 
 %union {
     /* Terminals */
     struct {
-        char *id;
+        union {
+            char *id;
+            char c;
+        };
         size_t line;
     } terminal;
     /* AST nodes */
-    //struct monga_ast_call_t *call;
-    //struct monga_ast_condition_t *condition;
-    //struct monga_ast_expression_t *expression;
-    //struct monga_ast_expression_list_t *expression_list;
-    //struct monga_ast_variable_t *variable;
-    //struct monga_ast_statement_t *statement;
-    //struct monga_ast_statement_list_t *statement_list;
-    //struct monga_ast_block_t *block;
-    //struct monga_ast_parameter_list_t *parameter_list;
-    //struct monga_ast_field_t *field;
-    //struct monga_ast_field_list_t *field_list;
-    //struct monga_ast_typedesc_t *typedesc;
-    //struct monga_ast_def_function_t *def_function;
-    //struct monga_ast_def_type_t *def_type;
-    //struct monga_ast_def_variable_t *def_variable;
-    //struct monga_ast_def_variable_list_t *def_variable_list;
-    //struct monga_ast_definition_t *definition;
-    //struct monga_ast_definition_list_t *definition_list;
-    //struct monga_ast_program_t *program;
+    struct tm_ast_program *program;
+    struct tm_ast_symbol_list *symbol_list;
+    struct tm_ast_symbol *symbol;
 }
 
 %type <program> program
+%type <symbol_list> symbol_list
+%type <symbol> symbol
 //%type <definition_list> definition_list opt_definition_list
 //%type <definition> definition
 //%type <def_variable_list> def_variable_list opt_def_variable_list parameter_list opt_parameter_list
@@ -81,31 +66,34 @@
 
 %%
 program:
-%%
 
-int main(int argc, char** argv) {
-  // Check if file name was passed as argument
-  // If not provided, reads from stdin
-  if( argc > 1 )
-  {
-    char *file_path = argv[1];
-    // Open a file handle to a particular file:
-    FILE *input_file = fopen(file_path, "r");
-    // Make sure it is valid:
-    if (!input_file) {
-      fprintf(stderr, "Can't open file '%s'.\n",file_path);
-      return EXIT_FAILURE;
+    symbol_list
+    {
+        $$ = construct(program);
+        $$->symbol_list = $1;
+        root = $$;
     }
-    // Set Flex to read from it instead of defaulting to STDIN:
-    yyin = input_file;
-  }
 
-  // Parse through the input:
-  yyparse();
+symbol_list :
 
-  return EXIT_SUCCESS;
-}
+    symbol_list symbol
+    {
+        $$ = $1;
+        $$->last->next = $2;
+        $$->last = $2;
+    }
+    | symbol
+    {
+        $$ = construct(symbol_list);
+        $$->first = $$->last = $1;
+    }
 
-void yyerror(const char *s) {
-  printf("Parsing error at line %d: '%s'\n",line_num,s);
-}
+symbol :
+
+    TOKEN_CHAR
+    {
+        $$ = construct(symbol);
+        $$->symbol = $<terminal.c>1;
+        $$->next = NULL;
+    }
+%%

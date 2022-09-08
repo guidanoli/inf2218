@@ -1,5 +1,5 @@
 add_subdirectory(utils)
-#add_subdirectory(ast)
+add_subdirectory(ast)
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
@@ -42,3 +42,5 @@ add_library(tm_y STATIC
         ${BISON_OUTPUT_H})
 
 target_link_libraries(tm_y tm_l tm_ast)
+
+add_subdirectory(ldb)
