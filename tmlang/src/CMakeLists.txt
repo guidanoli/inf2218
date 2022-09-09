@@ -12,6 +12,7 @@ if (BISON_FOUND)
             COMMAND ${BISON_EXECUTABLE}
             --output=${BISON_OUTPUT_C}
             -d
+            -Wcounterexamples
             ${CMAKE_CURRENT_SOURCE_DIR}/tm.y
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tm.y
             COMMENT "Generating tm.y.c and tm.y.h")

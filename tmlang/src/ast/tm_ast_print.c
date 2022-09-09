@@ -2,8 +2,29 @@
 
 #include <stdio.h>
 
+static void indent(int depth) {
+    while (depth--)
+        putchar(' ');
+}
+
+void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
+    switch (ast->tag) {
+        case STMT_PASS:
+            indent(depth);
+            printf("pass\n");
+            break;
+        case STMT_SEQ:
+            tm_ast_stmt_print(ast->u.seq.fst_stmt, depth);
+            tm_ast_stmt_print(ast->u.seq.snd_stmt, depth);
+            break;
+        default:
+            warn("unknown tag %d", ast->tag);
+    }
+}
+
 void tm_ast_state_print(struct tm_ast_state* ast) {
     printf("when %s do\n", ast->name);
+    tm_ast_stmt_print(ast->stmt, 1);
     printf("end\n");
 }
 

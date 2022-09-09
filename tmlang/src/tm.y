@@ -46,6 +46,7 @@ struct tm_ast_program* root = NULL;
     struct tm_ast_tape *tape;
     struct tm_ast_state_list *state_list;
     struct tm_ast_state *state;
+    struct tm_ast_stmt *stmt;
 }
 
 %type <program> program
@@ -55,6 +56,7 @@ struct tm_ast_program* root = NULL;
 %type <tape> tape
 %type <state_list> state_list
 %type <state> state
+%type <stmt> stmt_list stmt
 
 %%
 program:
@@ -130,10 +132,33 @@ state_list :
 
 state :
 
-    TOKEN_WHEN TOKEN_ID TOKEN_DO TOKEN_END
+    TOKEN_WHEN TOKEN_ID TOKEN_DO stmt_list TOKEN_END
     {
         $$ = construct(state);
         $$->name = $<terminal.id>2;
+        $$->stmt = $4;
         $$->next = NULL;
+    }
+
+stmt_list :
+
+    stmt_list stmt
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_SEQ;
+        $$->u.seq.fst_stmt = $1;
+        $$->u.seq.snd_stmt = $2;
+    }
+    | stmt
+    {
+        $$ = $1;
+    }
+
+stmt :
+
+    TOKEN_PASS
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_PASS;
     }
 %%

@@ -3,8 +3,22 @@
 
 #include "tm_utils.h"
 
+struct tm_ast_stmt {
+    enum {
+        STMT_PASS,
+        STMT_SEQ,
+    } tag;
+    union {
+        struct {
+            struct tm_ast_stmt* fst_stmt; // owned
+            struct tm_ast_stmt* snd_stmt; // owned
+        } seq;
+    } u;
+};
+
 struct tm_ast_state {
     char* name; // owned
+    struct tm_ast_stmt* stmt; // owned
     struct tm_ast_state* next; // nullable, owned
 };
 
