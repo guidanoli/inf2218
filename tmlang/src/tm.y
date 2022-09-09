@@ -44,6 +44,8 @@ struct tm_ast_program* root = NULL;
     struct tm_ast_symbol *symbol;
     struct tm_ast_tape_list *tape_list;
     struct tm_ast_tape *tape;
+    struct tm_ast_state_list *state_list;
+    struct tm_ast_state *state;
 }
 
 %type <program> program
@@ -51,15 +53,18 @@ struct tm_ast_program* root = NULL;
 %type <symbol> symbol
 %type <tape_list> tape_list
 %type <tape> tape
+%type <state_list> state_list
+%type <state> state
 
 %%
 program:
 
-    TOKEN_SYMBOLS symbol_list TOKEN_TAPES tape_list
+    TOKEN_SYMBOLS symbol_list TOKEN_TAPES tape_list state_list
     {
         $$ = construct(program);
         $$->symbol_list = $2;
         $$->tape_list = $4;
+        $$->state_list = $5;
         root = $$;
     }
 
@@ -106,6 +111,29 @@ tape :
     {
         $$ = construct(tape);
         $$->name = $<terminal.id>1;
+        $$->next = NULL;
+    }
+
+state_list :
+
+    state_list state
+    {
+        $$ = $1;
+        $$->last->next = $2;
+        $$->last = $2;
+    }
+    | state
+    {
+        $$ = construct(state_list);
+        $$->first = $$->last = $1;
+    }
+
+state :
+
+    TOKEN_WHEN TOKEN_ID TOKEN_DO TOKEN_END
+    {
+        $$ = construct(state);
+        $$->name = $<terminal.id>2;
         $$->next = NULL;
     }
 %%

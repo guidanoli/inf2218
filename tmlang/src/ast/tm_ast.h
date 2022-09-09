@@ -3,6 +3,16 @@
 
 #include "tm_utils.h"
 
+struct tm_ast_state {
+    char* name; // owned
+    struct tm_ast_state* next; // nullable, owned
+};
+
+struct tm_ast_state_list {
+    struct tm_ast_state* first; // owned
+    struct tm_ast_state* last; // borrowed
+};
+
 struct tm_ast_tape {
     char* name; // owned
     struct tm_ast_tape* next; // nullable, owned
@@ -26,6 +36,7 @@ struct tm_ast_symbol_list {
 struct tm_ast_program {
     struct tm_ast_symbol_list* symbol_list; // owned
     struct tm_ast_tape_list* tape_list; // owned
+    struct tm_ast_state_list* state_list; // owned
 };
 
 /* Program root */
