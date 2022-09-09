@@ -6,3 +6,5 @@ when s3 do pass if t1 = 'c' then pass pass else pass end end
 when s4 do if t3 = 'a' then if t2 = 'b' then pass else pass end else pass end pass end
 when s5 do t1 <- 'a' end
 when s6 do t2 <- t3 end
+when s7 do goto s3 end
+when s8 do goto s8 end

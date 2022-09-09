@@ -3,6 +3,11 @@
 
 #include "tm_utils.h"
 
+struct tm_ast_state_ref {
+    char* name; // owned
+    int index;
+};
+
 struct tm_ast_tape_ref {
     char* name; // owned
     int index;
@@ -37,6 +42,7 @@ struct tm_ast_stmt {
         STMT_SEQ,
         STMT_IFELSE,
         STMT_WRITE,
+        STMT_CHSTATE,
     } tag;
     union {
         struct {
@@ -52,6 +58,9 @@ struct tm_ast_stmt {
             struct tm_ast_tape_ref tape;
             struct tm_ast_exp* value_exp; // owned
         } write;
+        struct {
+            struct tm_ast_state_ref state;
+        } chstate;
     } u;
 };
 

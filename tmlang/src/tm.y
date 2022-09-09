@@ -183,6 +183,13 @@ stmt :
         $$->u.write.tape.index = -1;
         $$->u.write.value_exp = $3;
     }
+    |
+    TOKEN_GOTO TOKEN_ID
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_CHSTATE;
+        $$->u.chstate.state.name = $<terminal.id>2;
+    }
 
 cond :
 

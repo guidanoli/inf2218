@@ -60,6 +60,10 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
             tm_ast_exp_print(ast->u.write.value_exp);
             printf("\n");
             break;
+        case STMT_CHSTATE:
+            indent(depth);
+            printf("goto %s\n", ast->u.chstate.state.name);
+            break;
         default:
             warn("unknown tag %d", ast->tag);
     }
