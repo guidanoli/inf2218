@@ -3,23 +3,34 @@
 
 #include "tm_utils.h"
 
+struct tm_ast_tape {
+    char* name; // owned
+    struct tm_ast_tape* next; // nullable, owned
+};
+
+struct tm_ast_tape_list {
+    struct tm_ast_tape* first; // owned
+    struct tm_ast_tape* last; // borrowed
+};
+
 struct tm_ast_symbol {
     char symbol;
-    struct tm_ast_symbol* next; // nullable
+    struct tm_ast_symbol* next; // nullable, owned
 };
 
 struct tm_ast_symbol_list {
-    struct tm_ast_symbol* first;
-    struct tm_ast_symbol* last;
+    struct tm_ast_symbol* first; // owned
+    struct tm_ast_symbol* last; // borrowed
 };
 
 struct tm_ast_program {
-    struct tm_ast_symbol_list* symbol_list;
+    struct tm_ast_symbol_list* symbol_list; // owned
+    struct tm_ast_tape_list* tape_list; // owned
 };
 
 /* Program root */
 
-extern struct tm_ast_program *root;
+extern struct tm_ast_program *root; // owned
 
 /* Constructors */
 

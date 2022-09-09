@@ -42,37 +42,24 @@ struct tm_ast_program* root = NULL;
     struct tm_ast_program *program;
     struct tm_ast_symbol_list *symbol_list;
     struct tm_ast_symbol *symbol;
+    struct tm_ast_tape_list *tape_list;
+    struct tm_ast_tape *tape;
 }
 
 %type <program> program
 %type <symbol_list> symbol_list
 %type <symbol> symbol
-//%type <definition_list> definition_list opt_definition_list
-//%type <definition> definition
-//%type <def_variable_list> def_variable_list opt_def_variable_list parameter_list opt_parameter_list
-//%type <def_variable> def_variable parameter
-//%type <terminal> type opt_def_function_type
-//%type <def_type> def_type
-//%type <typedesc> typedesc
-//%type <field_list> field_list
-//%type <field> field
-//%type <def_function> def_function
-//%type <block> block opt_else_block
-//%type <statement_list> statement_list opt_statement_list
-//%type <statement> statement
-//%type <expression_list> opt_exp_list exp_list
-//%type <expression> exp opt_exp primary_exp postfix_exp new_exp unary_exp multiplicative_exp additive_exp conditional_exp opt_item_access item_access
-//%type <variable> var
-//%type <condition> cond primary_cond negated_cond relational_cond equality_cond logical_and_cond logical_or_cond
-//%type <call> call
+%type <tape_list> tape_list
+%type <tape> tape
 
 %%
 program:
 
-    TOKEN_SYMBOLS symbol_list
+    TOKEN_SYMBOLS symbol_list TOKEN_TAPES tape_list
     {
         $$ = construct(program);
         $$->symbol_list = $2;
+        $$->tape_list = $4;
         root = $$;
     }
 
@@ -96,6 +83,29 @@ symbol :
     {
         $$ = construct(symbol);
         $$->symbol = $<terminal.c>1;
+        $$->next = NULL;
+    }
+
+tape_list :
+
+    tape_list tape
+    {
+        $$ = $1;
+        $$->last->next = $2;
+        $$->last = $2;
+    }
+    | tape
+    {
+        $$ = construct(tape_list);
+        $$->first = $$->last = $1;
+    }
+
+tape :
+
+    TOKEN_ID
+    {
+        $$ = construct(tape);
+        $$->name = $<terminal.id>1;
         $$->next = NULL;
     }
 %%
