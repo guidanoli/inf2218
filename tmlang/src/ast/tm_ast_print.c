@@ -33,6 +33,11 @@ void tm_ast_cond_print(struct tm_ast_cond* ast) {
 }
 
 void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
+    static const char* direction_names[] = {
+        [DIRECTION_LEFT] = "left",
+        [DIRECTION_RIGHT] = "right",
+    };
+
     switch (ast->tag) {
         case STMT_PASS:
             indent(depth);
@@ -59,6 +64,10 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
             printf("%s <- ", ast->u.write.tape.name);
             tm_ast_exp_print(ast->u.write.value_exp);
             printf("\n");
+            break;
+        case STMT_MOVE:
+            indent(depth);
+            printf("go %s in %s\n", direction_names[ast->u.move.direction], ast->u.move.tape.name);
             break;
         case STMT_CHSTATE:
             indent(depth);

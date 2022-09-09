@@ -49,11 +49,8 @@ int main(int argc, char** argv)
             case TOKEN_GOTO:
                 printf("GOTO\n");
                 break;
-            case TOKEN_LEFT:
-                printf("LEFT\n");
-                break;
-            case TOKEN_RIGHT:
-                printf("RIGHT\n");
+            case TOKEN_DIRECTION:
+                printf("DIRECTION %d\n", yylval.terminal.i);
                 break;
             case TOKEN_CHAR:
                 printf("CHAR TOKEN '%c'\n", yylval.terminal.c);

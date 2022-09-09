@@ -8,3 +8,5 @@ when s5 do t1 <- 'a' end
 when s6 do t2 <- t3 end
 when s7 do goto s3 end
 when s8 do goto s8 end
+when s9 do left t1 end
+when s9 do left t1 right t2 end

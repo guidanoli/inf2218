@@ -2,6 +2,7 @@
 #include <string.h>
 #include "tm_utils.h"
 #include "tm.y.h"
+#include "tm_ast.h"
 
 extern void yyerror(const char *s);
 
@@ -32,8 +33,14 @@ CHAR ['].[']
 "else" { return TOKEN_ELSE; }
 "<-" { return TOKEN_ARROW; }
 "goto" { return TOKEN_GOTO; }
-"left" { return TOKEN_LEFT; }
-"right" { return TOKEN_RIGHT; }
+"left" {
+	yylval.terminal.i = DIRECTION_LEFT;
+	return TOKEN_DIRECTION;
+}
+"right" {
+	yylval.terminal.i = DIRECTION_RIGHT;
+	return TOKEN_DIRECTION;
+}
 {ID} {
 	yylval.terminal.id = tm_memdup(yytext, yyleng+1);
 	return TOKEN_ID;

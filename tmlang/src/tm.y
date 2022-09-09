@@ -26,8 +26,7 @@ struct tm_ast_program* root = NULL;
 %token TOKEN_ELSE
 %token TOKEN_ARROW
 %token TOKEN_GOTO
-%token TOKEN_LEFT
-%token TOKEN_RIGHT
+%token TOKEN_DIRECTION
 
 %union {
     /* Terminals */
@@ -35,6 +34,7 @@ struct tm_ast_program* root = NULL;
         union {
             char *id;
             char c;
+            int i;
         };
         size_t line;
     } terminal;
@@ -82,7 +82,8 @@ symbol_list :
         $$->last->next = $2;
         $$->last = $2;
     }
-    | symbol
+    |
+    symbol
     {
         $$ = construct(symbol_list);
         $$->first = $$->last = $1;
@@ -105,7 +106,8 @@ tape_list :
         $$->last->next = $2;
         $$->last = $2;
     }
-    | tape
+    |
+    tape
     {
         $$ = construct(tape_list);
         $$->first = $$->last = $1;
@@ -128,7 +130,8 @@ state_list :
         $$->last->next = $2;
         $$->last = $2;
     }
-    | state
+    |
+    state
     {
         $$ = construct(state_list);
         $$->first = $$->last = $1;
@@ -153,7 +156,8 @@ stmt_list :
         $$->u.seq.fst_stmt = $1;
         $$->u.seq.snd_stmt = $2;
     }
-    | stmt
+    |
+    stmt
     {
         $$ = $1;
     }
@@ -182,6 +186,15 @@ stmt :
         $$->u.write.tape.name = $<terminal.id>1;
         $$->u.write.tape.index = -1;
         $$->u.write.value_exp = $3;
+    }
+    |
+    TOKEN_DIRECTION TOKEN_ID
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_MOVE;
+        $$->u.move.direction = $<terminal.i>1;
+        $$->u.move.tape.name = $<terminal.id>2;
+        $$->u.move.tape.index = -1;
     }
     |
     TOKEN_GOTO TOKEN_ID

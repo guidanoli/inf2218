@@ -33,7 +33,7 @@ add_library(tm_l STATIC
         ${FLEX_OUTPUT}
         ${BISON_OUTPUT_H})
 
-target_link_libraries(tm_l tm_utils)
+target_link_libraries(tm_l tm_utils tm_ast)
 
 target_include_directories(tm_l PUBLIC
         ${CMAKE_CURRENT_BINARY_DIR})

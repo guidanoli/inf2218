@@ -3,6 +3,11 @@
 
 #include "tm_utils.h"
 
+enum tm_ast_direction {
+    DIRECTION_LEFT,
+    DIRECTION_RIGHT,
+};
+
 struct tm_ast_state_ref {
     char* name; // owned
     int index;
@@ -42,6 +47,7 @@ struct tm_ast_stmt {
         STMT_SEQ,
         STMT_IFELSE,
         STMT_WRITE,
+        STMT_MOVE,
         STMT_CHSTATE,
     } tag;
     union {
@@ -58,6 +64,10 @@ struct tm_ast_stmt {
             struct tm_ast_tape_ref tape;
             struct tm_ast_exp* value_exp; // owned
         } write;
+        struct {
+            struct tm_ast_tape_ref tape;
+            enum tm_ast_direction direction;
+        } move;
         struct {
             struct tm_ast_state_ref state;
         } chstate;

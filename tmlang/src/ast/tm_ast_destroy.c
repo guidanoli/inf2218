@@ -47,6 +47,9 @@ void tm_ast_stmt_destroy(struct tm_ast_stmt* ast)
             free(ast->u.write.tape.name);
             tm_ast_exp_destroy(ast->u.write.value_exp);
             break;
+        case STMT_MOVE:
+            free(ast->u.move.tape.name);
+            break;
         case STMT_CHSTATE:
             free(ast->u.chstate.state.name);
             break;
