@@ -7,6 +7,31 @@ static void indent(int depth) {
         putchar(' ');
 }
 
+void tm_ast_exp_print(struct tm_ast_exp* ast) {
+    switch (ast->tag) {
+        case EXP_LITERAL:
+            printf("'%c'", ast->u.lit);
+            break;
+        case EXP_VARIABLE:
+            printf("%s", ast->u.var.name);
+            break;
+        default:
+            warn("unknown tag %d", ast->tag);
+    }
+}
+
+void tm_ast_cond_print(struct tm_ast_cond* ast) {
+    switch (ast->tag) {
+        case COND_EQ:
+            tm_ast_exp_print(ast->u.eq.left_exp);
+            printf(" = ");
+            tm_ast_exp_print(ast->u.eq.right_exp);
+            break;
+        default:
+            warn("unknown tag %d", ast->tag);
+    }
+}
+
 void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
     switch (ast->tag) {
         case STMT_PASS:
@@ -16,6 +41,18 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
         case STMT_SEQ:
             tm_ast_stmt_print(ast->u.seq.fst_stmt, depth);
             tm_ast_stmt_print(ast->u.seq.snd_stmt, depth);
+            break;
+        case STMT_IFELSE:
+            indent(depth);
+            printf("if ");
+            tm_ast_cond_print(ast->u.ifelse.cond);
+            printf(" then\n");
+            tm_ast_stmt_print(ast->u.ifelse.then_stmt, depth+1);
+            indent(depth);
+            printf("else\n");
+            tm_ast_stmt_print(ast->u.ifelse.else_stmt, depth+1);
+            indent(depth);
+            printf("end\n");
             break;
         default:
             warn("unknown tag %d", ast->tag);

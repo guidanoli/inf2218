@@ -47,6 +47,8 @@ struct tm_ast_program* root = NULL;
     struct tm_ast_state_list *state_list;
     struct tm_ast_state *state;
     struct tm_ast_stmt *stmt;
+    struct tm_ast_cond *cond;
+    struct tm_ast_exp *exp;
 }
 
 %type <program> program
@@ -57,6 +59,8 @@ struct tm_ast_program* root = NULL;
 %type <state_list> state_list
 %type <state> state
 %type <stmt> stmt_list stmt
+%type <cond> cond
+%type <exp> exp
 
 %%
 program:
@@ -160,5 +164,41 @@ stmt :
     {
         $$ = construct(stmt);
         $$->tag = STMT_PASS;
+    }
+    |
+    TOKEN_IF cond TOKEN_THEN stmt_list TOKEN_ELSE stmt_list TOKEN_END
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_IFELSE;
+        $$->u.ifelse.cond = $2;
+        $$->u.ifelse.then_stmt = $4;
+        $$->u.ifelse.else_stmt = $6;
+    }
+
+cond :
+
+    exp '=' exp
+    {
+        $$ = construct(cond);
+        $$->tag = COND_EQ;
+        $$->u.eq.left_exp = $1;
+        $$->u.eq.right_exp = $3;
+    }
+
+exp :
+
+    TOKEN_CHAR
+    {
+        $$ = construct(exp);
+        $$->tag = EXP_LITERAL;
+        $$->u.lit = $<terminal.c>1;
+    }
+    |
+    TOKEN_ID
+    {
+        $$ = construct(exp);
+        $$->tag = EXP_VARIABLE;
+        $$->u.var.name = $<terminal.id>1;
+        $$->u.var.index = -1;
     }
 %%

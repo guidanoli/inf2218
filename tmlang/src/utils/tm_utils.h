@@ -14,6 +14,6 @@ void* tm_memdup(
 
 
 #define warn(s, ...) \
-	fprintf(stderr, __FILE__ ":%d: " s, __LINE__, __VA_ARGS__)
+	fprintf(stderr, __FILE__ ":%d: " s "\n", __LINE__, __VA_ARGS__)
 
 #endif

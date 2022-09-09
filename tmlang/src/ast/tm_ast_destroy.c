@@ -2,6 +2,33 @@
 
 #include <stdlib.h>
 
+void tm_ast_exp_destroy(struct tm_ast_exp* ast)
+{
+    switch (ast->tag) {
+        case EXP_LITERAL:
+            break;
+        case EXP_VARIABLE:
+            free(ast->u.var.name);
+            break;
+        default:
+            warn("unknown tag %d", ast->tag);
+    }
+    free(ast);
+}
+
+void tm_ast_cond_destroy(struct tm_ast_cond* ast)
+{
+    switch (ast->tag) {
+        case COND_EQ:
+            tm_ast_exp_destroy(ast->u.eq.left_exp);
+            tm_ast_exp_destroy(ast->u.eq.right_exp);
+            break;
+        default:
+            warn("unknown tag %d", ast->tag);
+    }
+    free(ast);
+}
+
 void tm_ast_stmt_destroy(struct tm_ast_stmt* ast)
 {
     switch (ast->tag) {
@@ -10,6 +37,11 @@ void tm_ast_stmt_destroy(struct tm_ast_stmt* ast)
         case STMT_SEQ:
             tm_ast_stmt_destroy(ast->u.seq.fst_stmt);
             tm_ast_stmt_destroy(ast->u.seq.snd_stmt);
+            break;
+        case STMT_IFELSE:
+            tm_ast_cond_destroy(ast->u.ifelse.cond);
+            tm_ast_stmt_destroy(ast->u.ifelse.then_stmt);
+            tm_ast_stmt_destroy(ast->u.ifelse.else_stmt);
             break;
         default:
             warn("unknown tag %d", ast->tag);
