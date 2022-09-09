@@ -1,14 +1,16 @@
 %{
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
 
-  #include "tm_ast.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-  // Declare stuff from Flex that Bison needs to know about:
-  extern int yylex();
-  void yyerror(const char *s);
-  struct tm_ast_program* root = NULL;
+#include "tm_ast.h"
+
+// Declare stuff from Flex that Bison needs to know about:
+extern int yylex();
+void yyerror(const char *s);
+struct tm_ast_program* root = NULL;
+
 %}
 
 %token TOKEN_ID
@@ -67,10 +69,10 @@
 %%
 program:
 
-    symbol_list
+    TOKEN_SYMBOLS symbol_list
     {
         $$ = construct(program);
-        $$->symbol_list = $1;
+        $$->symbol_list = $2;
         root = $$;
     }
 

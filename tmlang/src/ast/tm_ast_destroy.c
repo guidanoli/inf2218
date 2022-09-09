@@ -1,4 +1,4 @@
-#include "tm_ast_destroy.h"
+#include "tm_ast.h"
 
 #include <stdlib.h>
 

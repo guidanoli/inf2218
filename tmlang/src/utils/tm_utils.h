@@ -5,6 +5,8 @@
 
 /* Utility functions */
 
+int tm_get_lineno();
+
 void* tm_memdup(
 	const void* mem,
 	size_t size);

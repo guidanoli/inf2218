@@ -44,3 +44,4 @@ add_library(tm_y STATIC
 target_link_libraries(tm_y tm_l tm_ast)
 
 add_subdirectory(ldb)
+add_subdirectory(ydb)

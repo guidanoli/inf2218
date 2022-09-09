@@ -8,7 +8,7 @@ extern void yyerror(const char *s);
 /* POSIX function */
 extern int fileno (FILE *stream);
 
-int line_num = 1;
+static int tm_lineno = 1;
 %}
 
 ID [a-zA-Z_][a-zA-Z_0-9]*
@@ -18,7 +18,7 @@ CHAR ['].[']
 %%
 
 
-[\n] { ++line_num; }
+[\n] { ++tm_lineno; }
 [ \t] ;
 --[^\n]* ;
 "symbols" { return TOKEN_SYMBOLS; }
@@ -44,3 +44,6 @@ CHAR ['].[']
 }
 . { return yytext[0]; }
 %%
+int tm_get_lineno() {
+	return tm_lineno;
+}
