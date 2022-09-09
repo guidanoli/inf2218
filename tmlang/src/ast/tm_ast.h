@@ -15,7 +15,7 @@ struct tm_ast_exp {
     } tag;
     union {
         char lit;
-        struct tm_ast_tape_ref var;
+        struct tm_ast_tape_ref tape;
     } u;
 };
 
@@ -36,6 +36,7 @@ struct tm_ast_stmt {
         STMT_PASS,
         STMT_SEQ,
         STMT_IFELSE,
+        STMT_WRITE,
     } tag;
     union {
         struct {
@@ -47,6 +48,10 @@ struct tm_ast_stmt {
             struct tm_ast_stmt* then_stmt; // owned
             struct tm_ast_stmt* else_stmt; // owned
         } ifelse;
+        struct {
+            struct tm_ast_tape_ref tape;
+            struct tm_ast_exp* value_exp; // owned
+        } write;
     } u;
 };
 

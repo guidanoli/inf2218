@@ -174,6 +174,15 @@ stmt :
         $$->u.ifelse.then_stmt = $4;
         $$->u.ifelse.else_stmt = $6;
     }
+    |
+    TOKEN_ID TOKEN_ARROW exp
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_WRITE;
+        $$->u.write.tape.name = $<terminal.id>1;
+        $$->u.write.tape.index = -1;
+        $$->u.write.value_exp = $3;
+    }
 
 cond :
 
@@ -198,7 +207,7 @@ exp :
     {
         $$ = construct(exp);
         $$->tag = EXP_VARIABLE;
-        $$->u.var.name = $<terminal.id>1;
-        $$->u.var.index = -1;
+        $$->u.tape.name = $<terminal.id>1;
+        $$->u.tape.index = -1;
     }
 %%

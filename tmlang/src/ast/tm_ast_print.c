@@ -13,7 +13,7 @@ void tm_ast_exp_print(struct tm_ast_exp* ast) {
             printf("'%c'", ast->u.lit);
             break;
         case EXP_VARIABLE:
-            printf("%s", ast->u.var.name);
+            printf("%s", ast->u.tape.name);
             break;
         default:
             warn("unknown tag %d", ast->tag);
@@ -53,6 +53,12 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
             tm_ast_stmt_print(ast->u.ifelse.else_stmt, depth+1);
             indent(depth);
             printf("end\n");
+            break;
+        case STMT_WRITE:
+            indent(depth);
+            printf("%s <- ", ast->u.write.tape.name);
+            tm_ast_exp_print(ast->u.write.value_exp);
+            printf("\n");
             break;
         default:
             warn("unknown tag %d", ast->tag);
