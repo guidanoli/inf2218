@@ -1,5 +1,5 @@
-#ifndef TM_AST_H
-#define TM_AST_H
+#ifndef tm_ast_h
+#define tm_ast_h
 
 #include "tm_utils.h"
 
@@ -8,13 +8,14 @@ enum tm_ast_direction {
     DIRECTION_RIGHT,
 };
 
-struct tm_ast_state_ref {
-    char* name; // owned
-    int index;
+enum tm_ast_reference_tag {
+    REF_STATE,
+    REF_TAPE,
 };
 
-struct tm_ast_tape_ref {
-    char* name; // owned
+struct tm_ast_reference {
+    enum tm_ast_reference_tag tag;
+    char* id; // owned
     int index;
 };
 
@@ -25,7 +26,7 @@ struct tm_ast_exp {
     } tag;
     union {
         char lit;
-        struct tm_ast_tape_ref tape;
+        struct tm_ast_reference tape_ref;
     } u;
 };
 
@@ -61,15 +62,15 @@ struct tm_ast_stmt {
             struct tm_ast_stmt* else_stmt; // owned
         } ifelse;
         struct {
-            struct tm_ast_tape_ref tape;
+            struct tm_ast_reference tape_ref;
             struct tm_ast_exp* value_exp; // owned
         } write;
         struct {
-            struct tm_ast_tape_ref tape;
+            struct tm_ast_reference tape_ref;
             enum tm_ast_direction direction;
         } move;
         struct {
-            struct tm_ast_state_ref state;
+            struct tm_ast_reference state_ref;
         } chstate;
     } u;
 };
@@ -124,5 +125,6 @@ extern struct tm_ast_program *root; // owned
 
 void tm_ast_program_destroy(struct tm_ast_program* ast);
 void tm_ast_program_print(struct tm_ast_program* ast);
+void tm_ast_program_bind(struct tm_ast_program* ast);
 
 #endif

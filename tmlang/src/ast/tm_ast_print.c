@@ -13,7 +13,7 @@ void tm_ast_exp_print(struct tm_ast_exp* ast) {
             printf("'%c'", ast->u.lit);
             break;
         case EXP_VARIABLE:
-            printf("%s", ast->u.tape.name);
+            printf("%s", ast->u.tape_ref.id);
             break;
         default:
             warn("unknown tag %d", ast->tag);
@@ -61,17 +61,17 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
             break;
         case STMT_WRITE:
             indent(depth);
-            printf("%s <- ", ast->u.write.tape.name);
+            printf("%s <- ", ast->u.write.tape_ref.id);
             tm_ast_exp_print(ast->u.write.value_exp);
             printf("\n");
             break;
         case STMT_MOVE:
             indent(depth);
-            printf("go %s in %s\n", direction_names[ast->u.move.direction], ast->u.move.tape.name);
+            printf("go %s in %s\n", direction_names[ast->u.move.direction], ast->u.move.tape_ref.id);
             break;
         case STMT_CHSTATE:
             indent(depth);
-            printf("goto %s\n", ast->u.chstate.state.name);
+            printf("goto %s\n", ast->u.chstate.state_ref.id);
             break;
         default:
             warn("unknown tag %d", ast->tag);

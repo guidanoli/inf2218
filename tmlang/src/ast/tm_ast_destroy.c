@@ -8,7 +8,7 @@ void tm_ast_exp_destroy(struct tm_ast_exp* ast)
         case EXP_LITERAL:
             break;
         case EXP_VARIABLE:
-            free(ast->u.tape.name);
+            free(ast->u.tape_ref.id);
             break;
         default:
             warn("unknown tag %d", ast->tag);
@@ -44,14 +44,14 @@ void tm_ast_stmt_destroy(struct tm_ast_stmt* ast)
             tm_ast_stmt_destroy(ast->u.ifelse.else_stmt);
             break;
         case STMT_WRITE:
-            free(ast->u.write.tape.name);
+            free(ast->u.write.tape_ref.id);
             tm_ast_exp_destroy(ast->u.write.value_exp);
             break;
         case STMT_MOVE:
-            free(ast->u.move.tape.name);
+            free(ast->u.move.tape_ref.id);
             break;
         case STMT_CHSTATE:
-            free(ast->u.chstate.state.name);
+            free(ast->u.chstate.state_ref.id);
             break;
         default:
             warn("unknown tag %d", ast->tag);

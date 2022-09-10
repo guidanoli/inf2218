@@ -183,8 +183,8 @@ stmt :
     {
         $$ = construct(stmt);
         $$->tag = STMT_WRITE;
-        $$->u.write.tape.name = $<terminal.id>1;
-        $$->u.write.tape.index = -1;
+        $$->u.write.tape_ref.id = $<terminal.id>1;
+        $$->u.write.tape_ref.tag = REF_TAPE;
         $$->u.write.value_exp = $3;
     }
     |
@@ -193,15 +193,16 @@ stmt :
         $$ = construct(stmt);
         $$->tag = STMT_MOVE;
         $$->u.move.direction = $<terminal.i>1;
-        $$->u.move.tape.name = $<terminal.id>2;
-        $$->u.move.tape.index = -1;
+        $$->u.move.tape_ref.id = $<terminal.id>2;
+        $$->u.move.tape_ref.tag = REF_TAPE;
     }
     |
     TOKEN_GOTO TOKEN_ID
     {
         $$ = construct(stmt);
         $$->tag = STMT_CHSTATE;
-        $$->u.chstate.state.name = $<terminal.id>2;
+        $$->u.chstate.state_ref.id = $<terminal.id>2;
+        $$->u.chstate.state_ref.tag = REF_STATE;
     }
 
 cond :
@@ -227,7 +228,7 @@ exp :
     {
         $$ = construct(exp);
         $$->tag = EXP_VARIABLE;
-        $$->u.tape.name = $<terminal.id>1;
-        $$->u.tape.index = -1;
+        $$->u.tape_ref.id = $<terminal.id>1;
+        $$->u.tape_ref.tag = REF_TAPE;
     }
 %%
