@@ -9,4 +9,8 @@ when s6 do t2 <- t3 end
 when s7 do goto s3 end
 when s8 do goto s8 end
 when s9 do left t1 end
-when s10 do left t1 right t2 end
+when s10 do left t1 right t2 end -- comment
+-- comment
+when s11 do if 'a' = t3 then pass else pass end end
+when s12 do if 'a' = 'a' then pass else pass end end
+when s13 do if t2 = t1 then pass else pass end end
