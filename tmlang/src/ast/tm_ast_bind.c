@@ -42,7 +42,7 @@ void tm_ast_tape_list_bind(struct tm_ast_tape_list* ast)
     int index;
     for (struct tm_ast_tape* t = ast->first; t != NULL; t = t->next) {
         if (tm_ast_tape_find(t->name, t->next, &index)) {
-            fprintf(stderr, "Tape '%s' already defined\n", t->name);
+            fprintf(stderr, "Tape '%s' already declared\n", t->name);
             exit(1);
         }
     }
@@ -53,7 +53,7 @@ void tm_ast_symbol_list_bind(struct tm_ast_symbol_list* ast)
     int index;
     for (struct tm_ast_symbol* s = ast->first; s != NULL; s = s->next) {
         if (tm_ast_symbol_find(s->symbol, s->next, &index)) {
-            fprintf(stderr, "Symbol '%c' already defined\n", s->symbol);
+            fprintf(stderr, "Symbol '%c' already declared\n", s->symbol);
             exit(1);
         }
     }
@@ -67,7 +67,7 @@ void tm_ast_reference_bind(struct tm_ast_reference* ast, struct tm_ast_program* 
             if (tm_ast_state_find(ast->id, program->state_list->first, &index)) {
                 ast->index = index;
             } else {
-                fprintf(stderr, "No state '%s' declared", ast->id);
+                fprintf(stderr, "No state '%s' declared\n", ast->id);
                 exit(1);
             }
             break;
@@ -75,7 +75,7 @@ void tm_ast_reference_bind(struct tm_ast_reference* ast, struct tm_ast_program* 
             if (tm_ast_tape_find(ast->id, program->tape_list->first, &index)) {
                 ast->index = index;
             } else {
-                fprintf(stderr, "No tape '%s' declared", ast->id);
+                fprintf(stderr, "No tape '%s' declared\n", ast->id);
                 exit(1);
             }
             break;
@@ -90,7 +90,7 @@ void tm_ast_exp_bind(struct tm_ast_exp* ast, struct tm_ast_program* program)
     switch (ast->tag) {
         case EXP_LITERAL:
             if (!tm_ast_symbol_find(ast->u.lit, program->symbol_list->first, &index)) {
-                fprintf(stderr, "No symbol '%c' declared", ast->u.lit);
+                fprintf(stderr, "No symbol '%c' declared\n", ast->u.lit);
                 exit(1);
             }
             break;
@@ -148,7 +148,7 @@ void tm_ast_state_bind(struct tm_ast_state* ast, struct tm_ast_program* program)
     int index;
     tm_ast_stmt_bind(ast->stmt, program);
     if (tm_ast_state_find(ast->name, ast->next, &index)) {
-        fprintf(stderr, "State '%s' already defined\n", ast->name);
+        fprintf(stderr, "State '%s' already declared\n", ast->name);
         exit(1);
     }
 }
