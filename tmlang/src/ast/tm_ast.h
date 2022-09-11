@@ -21,6 +21,7 @@ struct tm_ast_reference {
 
 struct tm_ast_exp {
     enum {
+        EXP_BLANK,
         EXP_LITERAL,
         EXP_VARIABLE,
     } tag;

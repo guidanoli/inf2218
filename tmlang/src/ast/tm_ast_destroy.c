@@ -5,6 +5,8 @@
 void tm_ast_exp_destroy(struct tm_ast_exp* ast)
 {
     switch (ast->tag) {
+        case EXP_BLANK:
+            break;
         case EXP_LITERAL:
             break;
         case EXP_VARIABLE:

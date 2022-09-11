@@ -27,6 +27,7 @@ struct tm_ast_program* root = NULL;
 %token TOKEN_ARROW
 %token TOKEN_GOTO
 %token TOKEN_DIRECTION
+%token TOKEN_BLANK
 
 %union {
     /* Terminals */
@@ -217,6 +218,12 @@ cond :
 
 exp :
 
+    TOKEN_BLANK
+    {
+        $$ = construct(exp);
+        $$->tag = EXP_BLANK;
+    }
+    |
     TOKEN_CHAR
     {
         $$ = construct(exp);

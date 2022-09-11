@@ -9,6 +9,9 @@ static void indent(int depth) {
 
 void tm_ast_exp_print(struct tm_ast_exp* ast) {
     switch (ast->tag) {
+        case EXP_BLANK:
+            printf("blank");
+            break;
         case EXP_LITERAL:
             printf("'%c'", ast->u.lit);
             break;

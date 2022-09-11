@@ -41,6 +41,7 @@ CHAR ['].[']
 	yylval.terminal.i = DIRECTION_RIGHT;
 	return TOKEN_DIRECTION;
 }
+"blank" { return TOKEN_BLANK; }
 {ID} {
 	yylval.terminal.id = tm_memdup(yytext, yyleng+1);
 	return TOKEN_ID;

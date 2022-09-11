@@ -14,3 +14,5 @@ when s10 do left t1 right t2 end -- comment
 when s11 do if 'a' = t3 then pass else pass end end
 when s12 do if 'a' = 'a' then pass else pass end end
 when s13 do if t2 = t1 then pass else pass end end
+when s14 do if t1 = blank then pass else pass end end
+when s15 do if blank = blank then pass else pass end end

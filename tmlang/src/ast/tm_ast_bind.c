@@ -88,6 +88,8 @@ void tm_ast_exp_bind(struct tm_ast_exp* ast, struct tm_ast_program* program)
 {
     int index;
     switch (ast->tag) {
+        case EXP_BLANK:
+            break;
         case EXP_LITERAL:
             if (!tm_ast_symbol_find(ast->u.lit, program->symbol_list->first, &index)) {
                 fprintf(stderr, "No symbol '%c' declared\n", ast->u.lit);
