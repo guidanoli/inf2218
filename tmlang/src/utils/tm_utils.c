@@ -12,3 +12,10 @@ void* tm_memdup(
 	memcpy(new_mem, mem, size);
 	return new_mem;
 }
+
+void indent(int depth) {
+    while (depth--)
+        putchar('\t');
+}
+
+

@@ -2,11 +2,6 @@
 
 #include <stdio.h>
 
-static void indent(int depth) {
-    while (depth--)
-        putchar(' ');
-}
-
 void tm_ast_exp_print(struct tm_ast_exp* ast) {
     switch (ast->tag) {
         case EXP_BLANK:
@@ -37,6 +32,7 @@ void tm_ast_cond_print(struct tm_ast_cond* ast) {
 
 void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
     static const char* direction_names[] = {
+        [DIRECTION_STOP] = "stop",
         [DIRECTION_LEFT] = "left",
         [DIRECTION_RIGHT] = "right",
     };

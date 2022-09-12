@@ -128,6 +128,7 @@ state_list :
     state_list state
     {
         $$ = $1;
+        $2->index = $$->last->index + 1;
         $$->last->next = $2;
         $$->last = $2;
     }
@@ -136,6 +137,7 @@ state_list :
     {
         $$ = construct(state_list);
         $$->first = $$->last = $1;
+        $1->index = 0;
     }
 
 state :

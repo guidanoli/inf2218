@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-bool tm_ast_tape_find(const char* name, struct tm_ast_tape* ast, int* index_ptr)
+static bool tm_ast_tape_find(const char* name, struct tm_ast_tape* ast, int* index_ptr)
 {
     for (int index = 0; ast != NULL; ast = ast->next, index++) {
         if (strcmp(name, ast->name) == 0) {
@@ -15,7 +15,7 @@ bool tm_ast_tape_find(const char* name, struct tm_ast_tape* ast, int* index_ptr)
     return false;
 }
 
-bool tm_ast_symbol_find(char symbol, struct tm_ast_symbol* ast, int* index_ptr)
+static bool tm_ast_symbol_find(char symbol, struct tm_ast_symbol* ast, int* index_ptr)
 {
     for (int index = 0; ast != NULL; ast = ast->next, index++) {
         if (symbol == ast->symbol) {
@@ -26,7 +26,7 @@ bool tm_ast_symbol_find(char symbol, struct tm_ast_symbol* ast, int* index_ptr)
     return false;
 }
 
-bool tm_ast_state_find(char* name, struct tm_ast_state* ast, int* index_ptr)
+static bool tm_ast_state_find(char* name, struct tm_ast_state* ast, int* index_ptr)
 {
     for (int index = 0; ast != NULL; ast = ast->next, index++) {
         if (strcmp(name, ast->name) == 0) {

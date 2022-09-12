@@ -4,6 +4,7 @@
 #include "tm_utils.h"
 
 enum tm_ast_direction {
+    DIRECTION_STOP,
     DIRECTION_LEFT,
     DIRECTION_RIGHT,
 };
@@ -78,6 +79,7 @@ struct tm_ast_stmt {
 
 struct tm_ast_state {
     char* name; // owned
+    int index;
     struct tm_ast_stmt* stmt; // owned
     struct tm_ast_state* next; // nullable, owned
 };
