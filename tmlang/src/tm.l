@@ -22,8 +22,8 @@ CHAR ['].[']
 [\n] { ++tm_lineno; }
 [ \t] ;
 --[^\n]* ;
-"symbols" { return TOKEN_SYMBOLS; }
-"tapes" { return TOKEN_TAPES; }
+"tape" { return TOKEN_TAPE; }
+"with" { return TOKEN_WITH; }
 "when" { return TOKEN_WHEN; }
 "do" { return TOKEN_DO; }
 "end" { return TOKEN_END; }

@@ -1,5 +1,5 @@
-symbols 'a' 'b'
-tapes t1 t2
+tape t1
 when s1 do
-    if t1 = t3 then pass else pass end
+    -- No tape 't2' declared
+    if t1 = t2 then pass else pass end
 end

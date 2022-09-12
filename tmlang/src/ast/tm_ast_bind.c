@@ -37,23 +37,24 @@ static bool tm_ast_state_find(char* name, struct tm_ast_state* ast, int* index_p
     return false;
 }
 
-void tm_ast_tape_list_bind(struct tm_ast_tape_list* ast)
-{
-    int index;
-    for (struct tm_ast_tape* t = ast->first; t != NULL; t = t->next) {
-        if (tm_ast_tape_find(t->name, t->next, &index)) {
-            fprintf(stderr, "Tape '%s' already declared\n", t->name);
-            exit(1);
-        }
-    }
-}
-
 void tm_ast_symbol_list_bind(struct tm_ast_symbol_list* ast)
 {
     int index;
     for (struct tm_ast_symbol* s = ast->first; s != NULL; s = s->next) {
         if (tm_ast_symbol_find(s->symbol, s->next, &index)) {
             fprintf(stderr, "Symbol '%c' already declared\n", s->symbol);
+            exit(1);
+        }
+    }
+}
+
+void tm_ast_tape_list_bind(struct tm_ast_tape_list* ast)
+{
+    int index;
+    for (struct tm_ast_tape* t = ast->first; t != NULL; t = t->next) {
+        tm_ast_symbol_list_bind(t->symbol_list);
+        if (tm_ast_tape_find(t->name, t->next, &index)) {
+            fprintf(stderr, "Tape '%s' already declared\n", t->name);
             exit(1);
         }
     }
@@ -91,10 +92,6 @@ void tm_ast_exp_bind(struct tm_ast_exp* ast, struct tm_ast_program* program)
         case EXP_BLANK:
             break;
         case EXP_LITERAL:
-            if (!tm_ast_symbol_find(ast->u.lit, program->symbol_list->first, &index)) {
-                fprintf(stderr, "No symbol '%c' declared\n", ast->u.lit);
-                exit(1);
-            }
             break;
         case EXP_VARIABLE:
             tm_ast_reference_bind(&ast->u.tape_ref, program);
@@ -164,7 +161,6 @@ void tm_ast_state_list_bind(struct tm_ast_state_list* ast, struct tm_ast_program
 
 void tm_ast_program_bind(struct tm_ast_program* ast)
 {
-    tm_ast_symbol_list_bind(ast->symbol_list);
     tm_ast_tape_list_bind(ast->tape_list);
     tm_ast_state_list_bind(ast->state_list, ast);
 }

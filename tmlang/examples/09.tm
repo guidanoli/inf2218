@@ -1,5 +1,5 @@
-symbols 'a' 'b'
-tapes t1 t2
+tape t1
 when s1 do
-    t3 <- 'a'
+    -- No tape 't2' declared
+    t2 <- 'a'
 end

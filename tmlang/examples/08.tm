@@ -1,5 +1,5 @@
-symbols 'a' 'b'
-tapes t1 t2
+tape t1
+tape t2
 when s1 do
-    t1 <- t3
+    t1 <- t2
 end

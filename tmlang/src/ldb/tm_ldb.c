@@ -16,11 +16,11 @@ int main(int argc, char** argv)
 				printf("ID \"%s\"\n", yylval.terminal.id);
 				free(yylval.terminal.id);
 				break;
-            case TOKEN_SYMBOLS:
-                printf("SYMBOLS\n");
+            case TOKEN_WITH:
+                printf("WITH\n");
                 break;
-            case TOKEN_TAPES:
-                printf("TAPES\n");
+            case TOKEN_TAPE:
+                printf("TAPE\n");
                 break;
             case TOKEN_WHEN:
                 printf("WHEN\n");

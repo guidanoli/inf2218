@@ -1,5 +1,5 @@
-symbols 'a' 'b'
-tapes t1 t2
+tape t1
 when s1 do
-    left t3
+    -- No tape 't2' declared
+    left t2
 end

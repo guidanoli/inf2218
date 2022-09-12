@@ -1,4 +1,3 @@
 -- 'a' is already defined
-symbols '0' '1' 'a' 'b' 'c' 'd' 'a'
-tapes t1
+tape t1 with '0' '1' 'a' 'b' 'c' 'd' 'a'
 when s do pass end

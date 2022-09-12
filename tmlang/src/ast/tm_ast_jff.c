@@ -44,7 +44,7 @@ void tm_ast_direction_jff(enum tm_ast_direction dir)
 	printf("%s", direction_names[dir]);
 }
 
-void tm_ast_env_jff_aux(struct env_t* env)
+void tm_ast_env_jff_aux2(struct env_t* env)
 {
 	env->next_state = NULL;
 	for (int i = 0; i < env->num_tapes; ++i) {
@@ -69,29 +69,38 @@ void tm_ast_env_jff_aux(struct env_t* env)
 	printf("\t\t</transition>\n");
 }
 
-#define next(t) if (t == NULL) { break; } else { t = t->next; }
+static struct tm_ast_tape* tape_at(struct tm_ast_program* program, int index)
+{
+	struct tm_ast_tape* tape = program->tape_list->first;
+	while (index > 0) {
+		tape = tape->next;
+		index--;
+	}
+	return tape;
+}
+
+// nested loop with recursion
+void tm_ast_env_jff_aux1(struct env_t* env, struct tm_ast_tape* tape, struct tm_ast_symbol** tape_symbol)
+{
+	if (tape == NULL) {
+		tm_ast_env_jff_aux2(env);
+	} else {
+		struct tm_ast_symbol* symbol = tape->symbol_list->first;
+		while (1) {
+			*tape_symbol = symbol;
+			tm_ast_env_jff_aux1(env, tape->next, tape_symbol + 1);
+			if (symbol == NULL) {
+				break;
+			} else {
+				symbol = symbol->next;
+			}
+		};
+	}
+}
 
 void tm_ast_env_jff(struct env_t* env)
 {
-	struct tm_ast_symbol *s0, **t;
-	s0 = env->program->symbol_list->first;
-	t = env->curr_tapes;
-	for (t[0] = s0;;) {
-		for (t[1] = s0;;) {
-			for (t[2] = s0;;) {
-				for (t[3] = s0;;) {
-					for (t[4] = s0;;) {
-						tm_ast_env_jff_aux(env);
-						next(t[4]);
-					}
-					next(t[3]);
-				}
-				next(t[2]);
-			}
-			next(t[1]);
-		}
-		next(t[0]);
-	}
+	tm_ast_env_jff_aux1(env, env->program->tape_list->first, env->curr_tapes);
 }
 
 void tm_ast_state_jff(struct tm_ast_state* ast)
@@ -129,7 +138,7 @@ void tm_ast_env_init(struct tm_ast_program* ast, struct env_t* env)
 		num_tapes++;
 	}
 	if (num_tapes > 5) {
-		fprintf(stderr, "JFLAP 7.1 doesn't support more than 5 tapes\n");
+		fprintf(stderr, "JFLAP 7.1 doesn't support Turing Machines with more than 5 tapes\n");
 		exit(1);
 	}
 	env->program = ast;
