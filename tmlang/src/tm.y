@@ -230,8 +230,8 @@ or_cond :
     {
         $$ = construct(cond);
         $$->tag = COND_OR;
-        $$->u.or.left_cond = $1;
-        $$->u.or.right_cond = $3;
+        $$->u.bin_cond_op.left = $1;
+        $$->u.bin_cond_op.right = $3;
     }
     |
     and_cond
@@ -245,8 +245,8 @@ and_cond :
     {
         $$ = construct(cond);
         $$->tag = COND_AND;
-        $$->u.and.left_cond = $1;
-        $$->u.and.right_cond = $3;
+        $$->u.bin_cond_op.left = $1;
+        $$->u.bin_cond_op.right = $3;
     }
     |
     cmp_cond
@@ -260,16 +260,16 @@ cmp_cond :
     {
         $$ = construct(cond);
         $$->tag = COND_EQ;
-        $$->u.eq.left_exp = $1;
-        $$->u.eq.right_exp = $3;
+        $$->u.bin_exp_op.left = $1;
+        $$->u.bin_exp_op.right = $3;
     }
     |
     exp TOKEN_NEQ exp
     {
         $$ = construct(cond);
         $$->tag = COND_NEQ;
-        $$->u.neq.left_exp = $1;
-        $$->u.neq.right_exp = $3;
+        $$->u.bin_exp_op.left = $1;
+        $$->u.bin_exp_op.right = $3;
     }
     |
     primary_cond

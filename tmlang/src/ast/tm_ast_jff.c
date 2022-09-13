@@ -45,20 +45,20 @@ bool tm_ast_cond_eval(struct env_t* env, struct tm_ast_cond* ast)
 	bool b1, b2;
 	switch (ast->tag) {
         case COND_EQ:
-            c1 = tm_ast_exp_eval(env, ast->u.eq.left_exp);
-            c2 = tm_ast_exp_eval(env, ast->u.eq.right_exp);
+            c1 = tm_ast_exp_eval(env, ast->u.bin_exp_op.left);
+            c2 = tm_ast_exp_eval(env, ast->u.bin_exp_op.right);
 			return c1 == c2;
 		case COND_NEQ:
-            c1 = tm_ast_exp_eval(env, ast->u.neq.left_exp);
-            c2 = tm_ast_exp_eval(env, ast->u.neq.right_exp);
+            c1 = tm_ast_exp_eval(env, ast->u.bin_exp_op.left);
+            c2 = tm_ast_exp_eval(env, ast->u.bin_exp_op.right);
 			return c1 != c2;
 		case COND_AND:
-			b1 = tm_ast_cond_eval(env, ast->u.and.left_cond);
-			b2 = tm_ast_cond_eval(env, ast->u.and.right_cond);
+			b1 = tm_ast_cond_eval(env, ast->u.bin_cond_op.left);
+			b2 = tm_ast_cond_eval(env, ast->u.bin_cond_op.right);
 			return b1 && b2;
 		case COND_OR:
-			b1 = tm_ast_cond_eval(env, ast->u.or.left_cond);
-			b2 = tm_ast_cond_eval(env, ast->u.or.right_cond);
+			b1 = tm_ast_cond_eval(env, ast->u.bin_cond_op.left);
+			b2 = tm_ast_cond_eval(env, ast->u.bin_cond_op.right);
 			return b1 || b2;
         default:
             warn("unknown tag %d", ast->tag);

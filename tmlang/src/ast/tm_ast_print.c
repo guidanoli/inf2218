@@ -21,24 +21,24 @@ void tm_ast_exp_print(struct tm_ast_exp* ast) {
 void tm_ast_cond_print(struct tm_ast_cond* ast) {
     switch (ast->tag) {
         case COND_EQ:
-            tm_ast_exp_print(ast->u.eq.left_exp);
+            tm_ast_exp_print(ast->u.bin_exp_op.left);
             printf(" == ");
-            tm_ast_exp_print(ast->u.eq.right_exp);
+            tm_ast_exp_print(ast->u.bin_exp_op.right);
             break;
         case COND_NEQ:
-            tm_ast_exp_print(ast->u.neq.left_exp);
+            tm_ast_exp_print(ast->u.bin_exp_op.left);
             printf(" ~= ");
-            tm_ast_exp_print(ast->u.neq.right_exp);
+            tm_ast_exp_print(ast->u.bin_exp_op.right);
             break;
         case COND_AND:
-            tm_ast_cond_print(ast->u.and.left_cond);
+            tm_ast_cond_print(ast->u.bin_cond_op.left);
             printf(" and ");
-            tm_ast_cond_print(ast->u.and.right_cond);
+            tm_ast_cond_print(ast->u.bin_cond_op.right);
             break;
         case COND_OR:
-            tm_ast_cond_print(ast->u.or.left_cond);
+            tm_ast_cond_print(ast->u.bin_cond_op.left);
             printf(" or ");
-            tm_ast_cond_print(ast->u.or.right_cond);
+            tm_ast_cond_print(ast->u.bin_cond_op.right);
             break;
         default:
             warn("unknown tag %d", ast->tag);
