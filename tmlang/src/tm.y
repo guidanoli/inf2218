@@ -15,19 +15,17 @@ struct tm_ast_program* root = NULL;
 
 %token TOKEN_ID
 %token TOKEN_CHAR
-%token TOKEN_WITH
-%token TOKEN_TAPE
-%token TOKEN_WHEN
+%token TOKEN_WHILE
 %token TOKEN_DO
 %token TOKEN_END
 %token TOKEN_PASS
 %token TOKEN_IF
 %token TOKEN_THEN
 %token TOKEN_ELSE
-%token TOKEN_ARROW
 %token TOKEN_GOTO
 %token TOKEN_DIRECTION
 %token TOKEN_BLANK
+%token TOKEN_EQ
 
 %union {
     /* Terminals */
@@ -53,13 +51,13 @@ struct tm_ast_program* root = NULL;
 }
 
 %type <program> program
-%type <symbol_list> opt_symbol_list symbol_list
+%type <symbol_list> symbol_list
 %type <symbol> symbol
 %type <tape_list> tape_list
 %type <tape> tape
 %type <state_list> state_list
 %type <state> state
-%type <stmt> stmt_list stmt
+%type <stmt> opt_stmt_list stmt_list stmt
 %type <cond> cond
 %type <exp> exp
 
@@ -93,33 +91,21 @@ tape_list :
 
 tape :
 
-    TOKEN_TAPE TOKEN_ID opt_symbol_list
+    TOKEN_ID '=' '{' symbol_list '}'
     {
         $$ = construct(tape);
-        $$->name = $<terminal.id>2;
-        $$->symbol_list = $3;
+        $$->name = $<terminal.id>1;
+        $$->symbol_list = $4;
         $$->next = NULL;
-    }
-
-opt_symbol_list :
-
-    TOKEN_WITH symbol_list
-    {
-        $$ = $2;
-    }
-    |
-    {
-        $$ = construct(symbol_list);
-        $$->first = $$->last = NULL;
     }
 
 symbol_list :
 
-    symbol_list symbol
+    symbol_list ',' symbol
     {
         $$ = $1;
-        $$->last->next = $2;
-        $$->last = $2;
+        $$->last->next = $3;
+        $$->last = $3;
     }
     |
     symbol
@@ -156,12 +142,24 @@ state_list :
 
 state :
 
-    TOKEN_WHEN TOKEN_ID TOKEN_DO stmt_list TOKEN_END
+    TOKEN_WHILE TOKEN_ID TOKEN_DO opt_stmt_list TOKEN_END
     {
         $$ = construct(state);
         $$->name = $<terminal.id>2;
         $$->stmt = $4;
         $$->next = NULL;
+    }
+
+opt_stmt_list :
+
+    stmt_list
+    {
+        $$ = $1;
+    }
+    |
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_PASS;
     }
 
 stmt_list :
@@ -187,7 +185,7 @@ stmt :
         $$->tag = STMT_PASS;
     }
     |
-    TOKEN_IF cond TOKEN_THEN stmt_list TOKEN_ELSE stmt_list TOKEN_END
+    TOKEN_IF cond TOKEN_THEN opt_stmt_list TOKEN_ELSE opt_stmt_list TOKEN_END
     {
         $$ = construct(stmt);
         $$->tag = STMT_IFELSE;
@@ -196,7 +194,7 @@ stmt :
         $$->u.ifelse.else_stmt = $6;
     }
     |
-    TOKEN_ID TOKEN_ARROW exp
+    TOKEN_ID '=' exp
     {
         $$ = construct(stmt);
         $$->tag = STMT_WRITE;
@@ -205,12 +203,12 @@ stmt :
         $$->u.write.value_exp = $3;
     }
     |
-    TOKEN_DIRECTION TOKEN_ID
+    TOKEN_DIRECTION '(' TOKEN_ID ')'
     {
         $$ = construct(stmt);
         $$->tag = STMT_MOVE;
         $$->u.move.direction = $<terminal.i>1;
-        $$->u.move.tape_ref.id = $<terminal.id>2;
+        $$->u.move.tape_ref.id = $<terminal.id>3;
         $$->u.move.tape_ref.tag = REF_TAPE;
     }
     |
@@ -224,7 +222,7 @@ stmt :
 
 cond :
 
-    exp '=' exp
+    exp TOKEN_EQ exp
     {
         $$ = construct(cond);
         $$->tag = COND_EQ;

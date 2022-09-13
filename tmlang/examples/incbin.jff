@@ -3,17 +3,17 @@
 	<automaton>
 		<!--The list of states.-->
 		<state id="0" name="s0">
-			<x>75.0</x>
-			<y>30.0</y>
+			<x>246.0</x>
+			<y>135.0</y>
 			<initial/>
 		</state>
 		<state id="1" name="s1">
-			<x>30.0</x>
-			<y>170.0</y>
+			<x>145.0</x>
+			<y>30.0</y>
 		</state>
 		<state id="2" name="s2">
-			<x>154.0</x>
-			<y>233.0</y>
+			<x>30.0</x>
+			<y>109.0</y>
 			<final/>
 		</state>
 		<!--The list of transitions.-->
@@ -40,6 +40,13 @@
 		</transition>
 		<transition>
 			<from>1</from>
+			<to>2</to>
+			<read>0</read>
+			<write>1</write>
+			<move>S</move>
+		</transition>
+		<transition>
+			<from>1</from>
 			<to>1</to>
 			<read>1</read>
 			<write>0</write>
@@ -49,13 +56,6 @@
 			<from>1</from>
 			<to>2</to>
 			<read/>
-			<write>1</write>
-			<move>S</move>
-		</transition>
-		<transition>
-			<from>1</from>
-			<to>2</to>
-			<read>0</read>
 			<write>1</write>
 			<move>S</move>
 		</transition>
