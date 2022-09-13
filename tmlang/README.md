@@ -32,10 +32,10 @@ Use pipes to redirect these streams to the appropriate files.
 ./build/src/jff/tm_jff < foo.lua > foo.jff
 ```
 
-Then, you can run the JFLAP jar file and load the JFF file through the GUI.
+Then, you can load the JFF file on JFLAP.
 
 ```sh
-java -jar JFLAP.jar
+java -jar JFLAP.jar foo.jff
 ```
 
 ### Example
