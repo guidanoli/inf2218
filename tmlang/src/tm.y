@@ -201,13 +201,13 @@ stmt :
         $$->u.write.value_exp = $3;
     }
     |
-    TOKEN_ID '.' TOKEN_DIRECTION '(' ')'
+    TOKEN_DIRECTION '(' TOKEN_ID ')'
     {
         $$ = construct(stmt);
         $$->tag = STMT_MOVE;
-        $$->u.move.tape_ref.id = $<terminal.id>1;
+        $$->u.move.tape_ref.id = $<terminal.id>3;
         $$->u.move.tape_ref.tag = REF_TAPE;
-        $$->u.move.direction = $<terminal.i>3;
+        $$->u.move.direction = $<terminal.i>1;
     }
     |
     TOKEN_GOTO TOKEN_ID
