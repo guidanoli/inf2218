@@ -4,44 +4,37 @@
 #include <string.h>
 #include <stdlib.h>
 
-static bool tm_ast_tape_find(const char* name, struct tm_ast_tape* ast, int* index_ptr)
+static struct tm_ast_tape* tm_ast_tape_find(const char* name, struct tm_ast_tape* ast)
 {
-    for (int index = 0; ast != NULL; ast = ast->next, index++) {
-        if (strcmp(name, ast->name) == 0) {
-            *index_ptr = index;
-            return true;
-        }
+    for (; ast != NULL; ast = ast->next) {
+        if (strcmp(name, ast->name) == 0)
+            break;
     }
-    return false;
+    return ast;
 }
 
-static bool tm_ast_symbol_find(char symbol, struct tm_ast_symbol* ast, int* index_ptr)
+static struct tm_ast_symbol* tm_ast_symbol_find(char symbol, struct tm_ast_symbol* ast)
 {
-    for (int index = 0; ast != NULL; ast = ast->next, index++) {
-        if (symbol == ast->symbol) {
-            *index_ptr = index;
-            return true;
-        }
+    for (; ast != NULL; ast = ast->next) {
+        if (symbol == ast->symbol)
+            break;
     }
-    return false;
+    return ast;
 }
 
-static bool tm_ast_state_find(char* name, struct tm_ast_state* ast, int* index_ptr)
+static struct tm_ast_state* tm_ast_state_find(const char* name, struct tm_ast_state* ast)
 {
-    for (int index = 0; ast != NULL; ast = ast->next, index++) {
-        if (strcmp(name, ast->name) == 0) {
-            *index_ptr = index;
-            return true;
-        }
+    for (; ast != NULL; ast = ast->next) {
+        if (strcmp(name, ast->name) == 0)
+            break;
     }
-    return false;
+    return ast;
 }
 
 void tm_ast_symbol_list_bind(struct tm_ast_symbol_list* ast)
 {
-    int index;
     for (struct tm_ast_symbol* s = ast->first; s != NULL; s = s->next) {
-        if (tm_ast_symbol_find(s->symbol, s->next, &index)) {
+        if (tm_ast_symbol_find(s->symbol, s->next) != NULL) {
             fprintf(stderr, "Symbol '%c' already declared\n", s->symbol);
             exit(1);
         }
@@ -50,10 +43,9 @@ void tm_ast_symbol_list_bind(struct tm_ast_symbol_list* ast)
 
 void tm_ast_tape_list_bind(struct tm_ast_tape_list* ast)
 {
-    int index;
     for (struct tm_ast_tape* t = ast->first; t != NULL; t = t->next) {
         tm_ast_symbol_list_bind(t->symbol_list);
-        if (tm_ast_tape_find(t->name, t->next, &index)) {
+        if (tm_ast_tape_find(t->name, t->next) != NULL) {
             fprintf(stderr, "Tape '%s' already declared\n", t->name);
             exit(1);
         }
@@ -62,22 +54,25 @@ void tm_ast_tape_list_bind(struct tm_ast_tape_list* ast)
 
 void tm_ast_reference_bind(struct tm_ast_reference* ast, struct tm_ast_program* program)
 {
-    int index;
+    struct tm_ast_state* state;
+    struct tm_ast_tape* tape;
     switch (ast->tag) {
         case REF_STATE:
-            if (tm_ast_state_find(ast->id, program->state_list->first, &index)) {
-                ast->index = index;
-            } else {
+            state = tm_ast_state_find(ast->id, program->state_list->first);
+            if (state == NULL) {
                 fprintf(stderr, "No state '%s' declared\n", ast->id);
                 exit(1);
+            } else {
+                ast->state = state;
             }
             break;
         case REF_TAPE:
-            if (tm_ast_tape_find(ast->id, program->tape_list->first, &index)) {
-                ast->index = index;
-            } else {
+            tape = tm_ast_tape_find(ast->id, program->tape_list->first);
+            if (tape == NULL) {
                 fprintf(stderr, "No tape '%s' declared\n", ast->id);
                 exit(1);
+            } else {
+                ast->tape = tape;
             }
             break;
         default:
@@ -87,7 +82,6 @@ void tm_ast_reference_bind(struct tm_ast_reference* ast, struct tm_ast_program* 
 
 void tm_ast_exp_bind(struct tm_ast_exp* ast, struct tm_ast_program* program)
 {
-    int index;
     switch (ast->tag) {
         case EXP_BLANK:
             break;
@@ -144,9 +138,8 @@ void tm_ast_stmt_bind(struct tm_ast_stmt* ast, struct tm_ast_program* program)
 
 void tm_ast_state_bind(struct tm_ast_state* ast, struct tm_ast_program* program)
 {
-    int index;
     tm_ast_stmt_bind(ast->stmt, program);
-    if (tm_ast_state_find(ast->name, ast->next, &index)) {
+    if (tm_ast_state_find(ast->name, ast->next) != NULL) {
         fprintf(stderr, "State '%s' already declared\n", ast->name);
         exit(1);
     }

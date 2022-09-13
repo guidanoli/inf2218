@@ -6,30 +6,101 @@
 struct env_t {
 	struct tm_ast_state* curr_state;
 	struct tm_ast_state* next_state;
-	struct tm_ast_symbol** curr_tapes;
-	struct tm_ast_symbol** next_tapes;
-	enum tm_ast_direction* movements;
+	char* curr_tapes;
+	char* next_tapes;
+	enum tm_ast_direction* next_move;
 	int num_tapes;
 	struct tm_ast_program* program;
 };
 
-void tm_ast_env_run(struct env_t* env)
+void tm_ast_env_prerun(struct env_t* env)
 {
-	struct tm_ast_stmt* stmt = env->curr_state->stmt;
-	if (env->next_state == NULL) {
-		env->next_state = env->curr_state;
-	}
+	env->next_state = env->curr_state;
 	for (int i = 0; i < env->num_tapes; ++i) {
-		if (env->next_tapes[i] == NULL) {
-			env->next_tapes[i] = env->curr_tapes[i];
-		}
+		env->next_tapes[i] = env->curr_tapes[i];
+		env->next_move[i] = DIRECTION_STOP;
 	}
 }
 
-void tm_ast_symbol_jff(struct tm_ast_symbol* ast)
+char tm_ast_exp_eval(struct env_t* env, struct tm_ast_exp* ast)
 {
-	if (ast != NULL) {
-		printf("%c", ast->symbol);
+    switch (ast->tag) {
+        case EXP_BLANK:
+			return '\0';
+        case EXP_LITERAL:
+			return ast->u.lit;
+        case EXP_VARIABLE:
+		{
+			int tape_index = ast->u.tape_ref.tape->index;
+			return env->curr_tapes[tape_index];
+		}
+        default:
+            warn("unknown tag %d", ast->tag);
+    }
+}
+
+bool tm_ast_cond_eval(struct env_t* env, struct tm_ast_cond* ast)
+{
+	switch (ast->tag) {
+        case COND_EQ:
+            char c1 = tm_ast_exp_eval(env, ast->u.eq.left_exp);
+            char c2 = tm_ast_exp_eval(env, ast->u.eq.right_exp);
+			return c1 == c2;
+        default:
+            warn("unknown tag %d", ast->tag);
+	}
+}
+
+void tm_ast_stmt_run(struct env_t* env, struct tm_ast_stmt* ast)
+{
+	switch (ast->tag) {
+        case STMT_PASS:
+            break;
+        case STMT_SEQ:
+            tm_ast_stmt_run(env, ast->u.seq.fst_stmt);
+            tm_ast_stmt_run(env, ast->u.seq.snd_stmt);
+            break;
+        case STMT_IFELSE:
+            if (tm_ast_cond_eval(env, ast->u.ifelse.cond)) {
+				tm_ast_stmt_run(env, ast->u.ifelse.then_stmt);
+			} else {
+				tm_ast_stmt_run(env, ast->u.ifelse.else_stmt);
+			}
+            break;
+        case STMT_WRITE:
+		{
+			int tape_index = ast->u.write.tape_ref.tape->index;
+			char value = tm_ast_exp_eval(env, ast->u.write.value_exp);
+			env->next_tapes[tape_index] = value;
+            break;
+		}
+        case STMT_MOVE:
+		{
+			int tape_index = ast->u.move.tape_ref.tape->index;
+			enum tm_ast_direction dir = ast->u.move.direction;
+			env->next_move[tape_index] = dir;
+            break;
+		}
+        case STMT_CHSTATE:
+		{
+			struct tm_ast_state* st = ast->u.chstate.state_ref.state;
+			env->next_state = st;
+            break;
+		}
+        default:
+            warn("unknown tag %d", ast->tag);
+	}
+}
+
+void tm_ast_env_run(struct env_t* env)
+{
+	tm_ast_stmt_run(env, env->curr_state->stmt);
+}
+
+void tm_ast_symbol_jff(char c)
+{
+	if (c != '\0') {
+		putchar(c);
 	}
 }
 
@@ -44,14 +115,8 @@ void tm_ast_direction_jff(enum tm_ast_direction dir)
 	printf("%s", direction_names[dir]);
 }
 
-void tm_ast_env_jff_aux2(struct env_t* env)
+void tm_ast_env_postrun(struct env_t* env)
 {
-	env->next_state = NULL;
-	for (int i = 0; i < env->num_tapes; ++i) {
-		env->next_tapes[i] = NULL;
-		env->movements[i] = DIRECTION_STOP;
-	}
-	tm_ast_env_run(env);
 	printf("\t\t<transition>\n");
 	printf("\t\t\t<from>%d</from>\n", env->curr_state->index);
 	printf("\t\t\t<to>%d</to>\n", env->next_state->index);
@@ -63,32 +128,30 @@ void tm_ast_env_jff_aux2(struct env_t* env)
 		tm_ast_symbol_jff(env->next_tapes[i]);
 		printf("</write>\n");
 		printf("\t\t\t<move tape=\"%d\">", i+1);
-		tm_ast_direction_jff(env->movements[i]);
+		tm_ast_direction_jff(env->next_move[i]);
 		printf("</move>\n");
 	}
 	printf("\t\t</transition>\n");
 }
 
-static struct tm_ast_tape* tape_at(struct tm_ast_program* program, int index)
+void tm_ast_env_jff_aux2(struct env_t* env)
 {
-	struct tm_ast_tape* tape = program->tape_list->first;
-	while (index > 0) {
-		tape = tape->next;
-		index--;
-	}
-	return tape;
+	tm_ast_env_prerun(env);
+	tm_ast_env_run(env);
+	tm_ast_env_postrun(env);
 }
 
 // nested loop with recursion
-void tm_ast_env_jff_aux1(struct env_t* env, struct tm_ast_tape* tape, struct tm_ast_symbol** tape_symbol)
+void tm_ast_env_jff_aux1(struct env_t* env, struct tm_ast_tape* tape)
 {
 	if (tape == NULL) {
 		tm_ast_env_jff_aux2(env);
 	} else {
 		struct tm_ast_symbol* symbol = tape->symbol_list->first;
 		while (1) {
-			*tape_symbol = symbol;
-			tm_ast_env_jff_aux1(env, tape->next, tape_symbol + 1);
+			char c = symbol == NULL ? '\0' : symbol->symbol;
+			env->curr_tapes[tape->index] = c;
+			tm_ast_env_jff_aux1(env, tape->next);
 			if (symbol == NULL) {
 				break;
 			} else {
@@ -98,9 +161,10 @@ void tm_ast_env_jff_aux1(struct env_t* env, struct tm_ast_tape* tape, struct tm_
 	}
 }
 
-void tm_ast_env_jff(struct env_t* env)
+void tm_ast_transition_jff(struct tm_ast_state* ast, struct env_t* env)
 {
-	tm_ast_env_jff_aux1(env, env->program->tape_list->first, env->curr_tapes);
+	env->curr_state = ast;
+	tm_ast_env_jff_aux1(env, env->program->tape_list->first);
 }
 
 void tm_ast_state_jff(struct tm_ast_state* ast)
@@ -126,33 +190,29 @@ void tm_ast_state_list_jff(struct tm_ast_state_list* ast, struct env_t* env)
 	}
 	printf("\t\t<!--The list of transitions.-->\n");
 	for (s = ast->first; s != NULL; s = s->next) {
-		env->curr_state = s;
-		tm_ast_env_jff(env);
+		tm_ast_transition_jff(s, env);
 	}
 }
 
 void tm_ast_env_init(struct tm_ast_program* ast, struct env_t* env)
 {
-	int num_tapes = 0;
-	for (struct tm_ast_tape* t = ast->tape_list->first; t != NULL; t = t->next) {
-		num_tapes++;
-	}
+	int num_tapes = ast->tape_list->last->index + 1;
 	if (num_tapes > 5) {
 		fprintf(stderr, "JFLAP 7.1 doesn't support Turing Machines with more than 5 tapes\n");
 		exit(1);
 	}
 	env->program = ast;
 	env->num_tapes = num_tapes;
-	env->curr_tapes = (struct tm_ast_symbol**) malloc(5 * sizeof(struct tm_ast_symbol*));
-	env->next_tapes = (struct tm_ast_symbol**) malloc(5 * sizeof(struct tm_ast_symbol*));
-	env->movements = (enum tm_ast_direction*) malloc(5 * sizeof(enum tm_ast_direction));
+	env->curr_tapes = (char*) malloc(num_tapes * sizeof(char));
+	env->next_tapes = (char*) malloc(num_tapes * sizeof(char));
+	env->next_move = (enum tm_ast_direction*) malloc(num_tapes * sizeof(enum tm_ast_direction));
 }
 
 void tm_ast_env_free(struct env_t* env)
 {
 	free(env->curr_tapes);
 	free(env->next_tapes);
-	free(env->movements);
+	free(env->next_move);
 }
 
 void tm_ast_program_jff(struct tm_ast_program* ast)

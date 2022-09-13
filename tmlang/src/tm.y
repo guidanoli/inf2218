@@ -79,6 +79,7 @@ tape_list :
     tape_list tape
     {
         $$ = $1;
+        $2->index = $$->last->index + 1;
         $$->last->next = $2;
         $$->last = $2;
     }
@@ -87,6 +88,7 @@ tape_list :
     {
         $$ = construct(tape_list);
         $$->first = $$->last = $1;
+        $1->index = 0;
     }
 
 tape :

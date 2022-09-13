@@ -17,7 +17,10 @@ enum tm_ast_reference_tag {
 struct tm_ast_reference {
     enum tm_ast_reference_tag tag;
     char* id; // owned
-    int index;
+    union {
+        struct tm_ast_state* state;
+        struct tm_ast_tape* tape;
+    };
 };
 
 struct tm_ast_exp {
@@ -101,6 +104,7 @@ struct tm_ast_symbol_list {
 
 struct tm_ast_tape {
     char* name; // owned
+    int index;
     struct tm_ast_symbol_list* symbol_list; // owned
     struct tm_ast_tape* next; // nullable, owned
 };
