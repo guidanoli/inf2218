@@ -16,23 +16,26 @@ int main(int argc, char** argv)
 				printf("ID \"%s\"\n", yylval.terminal.id);
 				free(yylval.terminal.id);
 				break;
-            case TOKEN_WHILE:
-                printf("WHEN\n");
+            case TOKEN_TAPE:
+                printf("TAPE\n");
                 break;
-            case TOKEN_DO:
-                printf("DO\n");
+            case TOKEN_BLANK:
+                printf("BLANK\n");
+                break;
+            case TOKEN_FUNCTION:
+                printf("FUNCTION\n");
                 break;
             case TOKEN_END:
                 printf("END\n");
-                break;
-            case TOKEN_PASS:
-                printf("PASS\n");
                 break;
             case TOKEN_IF:
                 printf("IF\n");
                 break;
             case TOKEN_THEN:
                 printf("THEN\n");
+                break;
+            case TOKEN_ELSEIF:
+                printf("ELSEIF\n");
                 break;
             case TOKEN_ELSE:
                 printf("ELSE\n");

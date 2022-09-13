@@ -38,12 +38,27 @@ struct tm_ast_exp {
 struct tm_ast_cond {
     enum {
         COND_EQ,
+        COND_NEQ,
+        COND_AND,
+        COND_OR,
     } tag;
     union {
         struct {
             struct tm_ast_exp* left_exp; // owned
             struct tm_ast_exp* right_exp; // owned
         } eq;
+        struct {
+            struct tm_ast_exp* left_exp; // owned
+            struct tm_ast_exp* right_exp; // owned
+        } neq;
+        struct {
+            struct tm_ast_cond* left_cond; // owned
+            struct tm_ast_cond* right_cond; // owned
+        } and;
+        struct {
+            struct tm_ast_cond* left_cond; // owned
+            struct tm_ast_cond* right_cond; // owned
+        } or;
     } u;
 };
 

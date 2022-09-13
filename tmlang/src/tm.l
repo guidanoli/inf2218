@@ -22,14 +22,16 @@ CHAR ['].[']
 [\n] { ++tm_lineno; }
 [ \t] ;
 --[^\n]* ;
-"while" { return TOKEN_WHILE; }
-"do" { return TOKEN_DO; }
 "end" { return TOKEN_END; }
-"pass" { return TOKEN_PASS; }
 "if" { return TOKEN_IF; }
 "then" { return TOKEN_THEN; }
 "else" { return TOKEN_ELSE; }
+"elseif" { return TOKEN_ELSEIF; }
+"and" { return TOKEN_AND; }
+"or" { return TOKEN_OR; }
 "goto" { return TOKEN_GOTO; }
+"tape" { return TOKEN_TAPE; }
+"function" { return TOKEN_FUNCTION; }
 "left" {
 	yylval.terminal.i = DIRECTION_LEFT;
 	return TOKEN_DIRECTION;
@@ -38,8 +40,9 @@ CHAR ['].[']
 	yylval.terminal.i = DIRECTION_RIGHT;
 	return TOKEN_DIRECTION;
 }
-"blank" { return TOKEN_BLANK; }
+"BLANK" { return TOKEN_BLANK; }
 "==" { return TOKEN_EQ; }
+"~=" { return TOKEN_NEQ; }
 {ID} {
 	yylval.terminal.id = tm_memdup(yytext, yyleng+1);
 	return TOKEN_ID;

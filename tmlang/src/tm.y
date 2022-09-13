@@ -15,17 +15,20 @@ struct tm_ast_program* root = NULL;
 
 %token TOKEN_ID
 %token TOKEN_CHAR
-%token TOKEN_WHILE
-%token TOKEN_DO
 %token TOKEN_END
-%token TOKEN_PASS
 %token TOKEN_IF
 %token TOKEN_THEN
 %token TOKEN_ELSE
+%token TOKEN_ELSEIF
+%token TOKEN_AND
+%token TOKEN_OR
 %token TOKEN_GOTO
 %token TOKEN_DIRECTION
 %token TOKEN_BLANK
 %token TOKEN_EQ
+%token TOKEN_NEQ
+%token TOKEN_TAPE
+%token TOKEN_FUNCTION
 
 %union {
     /* Terminals */
@@ -57,8 +60,8 @@ struct tm_ast_program* root = NULL;
 %type <tape> tape
 %type <state_list> state_list
 %type <state> state
-%type <stmt> opt_stmt_list stmt_list stmt
-%type <cond> cond
+%type <stmt> opt_stmt_list stmt_list stmt opt_else_stmt
+%type <cond> cond primary_cond cmp_cond and_cond or_cond
 %type <exp> exp
 
 %%
@@ -91,11 +94,11 @@ tape_list :
 
 tape :
 
-    TOKEN_ID '=' '{' symbol_list '}'
+    TOKEN_ID '=' TOKEN_TAPE '{' symbol_list '}'
     {
         $$ = construct(tape);
         $$->name = $<terminal.id>1;
-        $$->symbol_list = $4;
+        $$->symbol_list = $5;
         $$->next = NULL;
     }
 
@@ -142,11 +145,11 @@ state_list :
 
 state :
 
-    TOKEN_WHILE TOKEN_ID TOKEN_DO opt_stmt_list TOKEN_END
+    TOKEN_FUNCTION TOKEN_ID '(' ')' opt_stmt_list TOKEN_END
     {
         $$ = construct(state);
         $$->name = $<terminal.id>2;
-        $$->stmt = $4;
+        $$->stmt = $5;
         $$->next = NULL;
     }
 
@@ -179,19 +182,13 @@ stmt_list :
 
 stmt :
 
-    TOKEN_PASS
-    {
-        $$ = construct(stmt);
-        $$->tag = STMT_PASS;
-    }
-    |
-    TOKEN_IF cond TOKEN_THEN opt_stmt_list TOKEN_ELSE opt_stmt_list TOKEN_END
+    TOKEN_IF cond TOKEN_THEN opt_stmt_list opt_else_stmt TOKEN_END
     {
         $$ = construct(stmt);
         $$->tag = STMT_IFELSE;
         $$->u.ifelse.cond = $2;
         $$->u.ifelse.then_stmt = $4;
-        $$->u.ifelse.else_stmt = $6;
+        $$->u.ifelse.else_stmt = $5;
     }
     |
     TOKEN_ID '=' exp
@@ -203,13 +200,13 @@ stmt :
         $$->u.write.value_exp = $3;
     }
     |
-    TOKEN_DIRECTION '(' TOKEN_ID ')'
+    TOKEN_ID '.' TOKEN_DIRECTION '(' ')'
     {
         $$ = construct(stmt);
         $$->tag = STMT_MOVE;
-        $$->u.move.direction = $<terminal.i>1;
-        $$->u.move.tape_ref.id = $<terminal.id>3;
+        $$->u.move.tape_ref.id = $<terminal.id>1;
         $$->u.move.tape_ref.tag = REF_TAPE;
+        $$->u.move.direction = $<terminal.i>3;
     }
     |
     TOKEN_GOTO TOKEN_ID
@@ -222,12 +219,69 @@ stmt :
 
 cond :
 
+    or_cond
+    {
+        $$ = $1;
+    }
+
+or_cond :
+
+    or_cond TOKEN_OR and_cond
+    {
+        $$ = construct(cond);
+        $$->tag = COND_OR;
+        $$->u.or.left_cond = $1;
+        $$->u.or.right_cond = $3;
+    }
+    |
+    and_cond
+    {
+        $$ = $1;
+    }
+
+and_cond :
+
+    and_cond TOKEN_AND cmp_cond
+    {
+        $$ = construct(cond);
+        $$->tag = COND_AND;
+        $$->u.and.left_cond = $1;
+        $$->u.and.right_cond = $3;
+    }
+    |
+    cmp_cond
+    {
+        $$ = $1;
+    }
+
+cmp_cond :
+
     exp TOKEN_EQ exp
     {
         $$ = construct(cond);
         $$->tag = COND_EQ;
         $$->u.eq.left_exp = $1;
         $$->u.eq.right_exp = $3;
+    }
+    |
+    exp TOKEN_NEQ exp
+    {
+        $$ = construct(cond);
+        $$->tag = COND_NEQ;
+        $$->u.neq.left_exp = $1;
+        $$->u.neq.right_exp = $3;
+    }
+    |
+    primary_cond
+    {
+        $$ = $1;
+    }
+
+primary_cond :
+
+    '(' cond ')'
+    {
+        $$ = $2;
     }
 
 exp :
@@ -251,5 +305,26 @@ exp :
         $$->tag = EXP_VARIABLE;
         $$->u.tape_ref.id = $<terminal.id>1;
         $$->u.tape_ref.tag = REF_TAPE;
+    }
+
+opt_else_stmt :
+
+    TOKEN_ELSE opt_stmt_list
+    {
+        $$ = $2;
+    }
+    |
+    TOKEN_ELSEIF cond TOKEN_THEN opt_stmt_list opt_else_stmt
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_IFELSE;
+        $$->u.ifelse.cond = $2;
+        $$->u.ifelse.then_stmt = $4;
+        $$->u.ifelse.else_stmt = $5;
+    }
+    |
+    {
+        $$ = construct(stmt);
+        $$->tag = STMT_PASS;
     }
 %%

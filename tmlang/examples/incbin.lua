@@ -1,25 +1,28 @@
-t
-=
-{
-    '0'
-    ,
-    '1'
-}
-while s0 do
-    if t == blank then
+t = tape{'0', '1'}
+function s0()
+    if t == BLANK then
         goto s1
-        left(t)
+        t.left()
     else
-        right(t)
+        t.right()
     end
 end
-while s1 do
+function s1()
     if t == '1' then
         t = '0'
-        left(t)
+        t.left()
     else
         t = '1'
+        t.left()
         goto s2
     end
 end
-while s2 do end
+function s2()
+    if t == BLANK then
+        t.right()
+        goto s3
+    else
+        t.left()
+    end
+end
+function s3() end

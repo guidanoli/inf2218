@@ -102,6 +102,18 @@ void tm_ast_cond_bind(struct tm_ast_cond* ast, struct tm_ast_program* program)
             tm_ast_exp_bind(ast->u.eq.left_exp, program);
             tm_ast_exp_bind(ast->u.eq.right_exp, program);
             break;
+        case COND_NEQ:
+            tm_ast_exp_bind(ast->u.neq.left_exp, program);
+            tm_ast_exp_bind(ast->u.neq.right_exp, program);
+            break;
+        case COND_AND:
+            tm_ast_cond_bind(ast->u.and.left_cond, program);
+            tm_ast_cond_bind(ast->u.and.right_cond, program);
+            break;
+        case COND_OR:
+            tm_ast_cond_bind(ast->u.or.left_cond, program);
+            tm_ast_cond_bind(ast->u.or.right_cond, program);
+            break;
         default:
             warn("unknown tag %d", ast->tag);
     }

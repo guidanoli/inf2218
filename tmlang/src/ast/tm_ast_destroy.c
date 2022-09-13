@@ -25,6 +25,18 @@ void tm_ast_cond_destroy(struct tm_ast_cond* ast)
             tm_ast_exp_destroy(ast->u.eq.left_exp);
             tm_ast_exp_destroy(ast->u.eq.right_exp);
             break;
+        case COND_NEQ:
+            tm_ast_exp_destroy(ast->u.neq.left_exp);
+            tm_ast_exp_destroy(ast->u.neq.right_exp);
+            break;
+        case COND_AND:
+            tm_ast_cond_destroy(ast->u.and.left_cond);
+            tm_ast_cond_destroy(ast->u.and.right_cond);
+            break;
+        case COND_OR:
+            tm_ast_cond_destroy(ast->u.or.left_cond);
+            tm_ast_cond_destroy(ast->u.or.right_cond);
+            break;
         default:
             warn("unknown tag %d", ast->tag);
     }
