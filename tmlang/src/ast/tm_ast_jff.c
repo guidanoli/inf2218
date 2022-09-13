@@ -163,6 +163,11 @@ void tm_ast_env_jff_aux1(struct env_t* env, struct tm_ast_tape* tape)
 
 void tm_ast_transition_jff(struct tm_ast_state* ast, struct env_t* env)
 {
+	// Final states cannot have transitions
+	if (ast->next == NULL) {
+		return;
+	}
+
 	env->curr_state = ast;
 	tm_ast_env_jff_aux1(env, env->program->tape_list->first);
 }
