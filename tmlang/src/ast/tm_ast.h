@@ -41,6 +41,7 @@ struct tm_ast_cond {
         COND_NEQ,
         COND_AND,
         COND_OR,
+        COND_NOT,
     } tag;
     union {
         struct {
@@ -51,6 +52,7 @@ struct tm_ast_cond {
             struct tm_ast_cond* left; // owned
             struct tm_ast_cond* right; // owned
         } bin_cond_op;
+        struct tm_ast_cond* un_cond_op; // owned
     } u;
 };
 

@@ -31,6 +31,9 @@ void tm_ast_cond_destroy(struct tm_ast_cond* ast)
             tm_ast_cond_destroy(ast->u.bin_cond_op.left);
             tm_ast_cond_destroy(ast->u.bin_cond_op.right);
             break;
+        case COND_NOT:
+            tm_ast_cond_destroy(ast->u.un_cond_op);
+            break;
         default:
             warn("unknown tag %d", ast->tag);
     }

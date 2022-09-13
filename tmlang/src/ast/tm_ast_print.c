@@ -21,24 +21,37 @@ void tm_ast_exp_print(struct tm_ast_exp* ast) {
 void tm_ast_cond_print(struct tm_ast_cond* ast) {
     switch (ast->tag) {
         case COND_EQ:
+            printf("(");
             tm_ast_exp_print(ast->u.bin_exp_op.left);
             printf(" == ");
             tm_ast_exp_print(ast->u.bin_exp_op.right);
+            printf(")");
             break;
         case COND_NEQ:
+            printf("(");
             tm_ast_exp_print(ast->u.bin_exp_op.left);
             printf(" ~= ");
             tm_ast_exp_print(ast->u.bin_exp_op.right);
+            printf(")");
             break;
         case COND_AND:
+            printf("(");
             tm_ast_cond_print(ast->u.bin_cond_op.left);
             printf(" and ");
             tm_ast_cond_print(ast->u.bin_cond_op.right);
+            printf(")");
             break;
         case COND_OR:
+            printf("(");
             tm_ast_cond_print(ast->u.bin_cond_op.left);
             printf(" or ");
             tm_ast_cond_print(ast->u.bin_cond_op.right);
+            printf(")");
+            break;
+        case COND_NOT:
+            printf("(not ");
+            tm_ast_cond_print(ast->u.un_cond_op);
+            printf(")");
             break;
         default:
             warn("unknown tag %d", ast->tag);
@@ -54,8 +67,6 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
 
     switch (ast->tag) {
         case STMT_PASS:
-            indent(depth);
-            printf("pass\n");
             break;
         case STMT_SEQ:
             tm_ast_stmt_print(ast->u.seq.fst_stmt, depth);
@@ -75,7 +86,7 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
             break;
         case STMT_WRITE:
             indent(depth);
-            printf("%s <- ", ast->u.write.tape_ref.id);
+            printf("%s = ", ast->u.write.tape_ref.id);
             tm_ast_exp_print(ast->u.write.value_exp);
             printf("\n");
             break;
@@ -93,7 +104,7 @@ void tm_ast_stmt_print(struct tm_ast_stmt* ast, int depth) {
 }
 
 void tm_ast_state_print(struct tm_ast_state* ast) {
-    printf("when %s do\n", ast->name);
+    printf("when on state %s do\n", ast->name);
     tm_ast_stmt_print(ast->stmt, 1);
     printf("end\n");
 }

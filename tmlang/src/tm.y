@@ -22,6 +22,7 @@ struct tm_ast_program* root = NULL;
 %token TOKEN_ELSEIF
 %token TOKEN_AND
 %token TOKEN_OR
+%token TOKEN_NOT
 %token TOKEN_GOTO
 %token TOKEN_DIRECTION
 %token TOKEN_BLANK
@@ -61,7 +62,7 @@ struct tm_ast_program* root = NULL;
 %type <state_list> state_list
 %type <state> state
 %type <stmt> opt_stmt_list stmt_list stmt opt_else_stmt
-%type <cond> cond primary_cond cmp_cond and_cond or_cond
+%type <cond> cond primary_cond cmp_cond not_cond and_cond or_cond
 %type <exp> exp
 
 %%
@@ -241,12 +242,26 @@ or_cond :
 
 and_cond :
 
-    and_cond TOKEN_AND cmp_cond
+    and_cond TOKEN_AND not_cond
     {
         $$ = construct(cond);
         $$->tag = COND_AND;
         $$->u.bin_cond_op.left = $1;
         $$->u.bin_cond_op.right = $3;
+    }
+    |
+    not_cond
+    {
+        $$ = $1;
+    }
+
+not_cond :
+
+    TOKEN_NOT cmp_cond
+    {
+        $$ = construct(cond);
+        $$->tag = COND_NOT;
+        $$->u.un_cond_op = $2;
     }
     |
     cmp_cond

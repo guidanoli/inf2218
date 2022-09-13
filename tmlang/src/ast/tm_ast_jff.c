@@ -60,6 +60,9 @@ bool tm_ast_cond_eval(struct env_t* env, struct tm_ast_cond* ast)
 			b1 = tm_ast_cond_eval(env, ast->u.bin_cond_op.left);
 			b2 = tm_ast_cond_eval(env, ast->u.bin_cond_op.right);
 			return b1 || b2;
+        case COND_NOT:
+			b1 = tm_ast_cond_eval(env, ast->u.un_cond_op);
+			return !b1;
         default:
             warn("unknown tag %d", ast->tag);
 	}

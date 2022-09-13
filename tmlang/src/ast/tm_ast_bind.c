@@ -108,6 +108,9 @@ void tm_ast_cond_bind(struct tm_ast_cond* ast, struct tm_ast_program* program)
             tm_ast_cond_bind(ast->u.bin_cond_op.left, program);
             tm_ast_cond_bind(ast->u.bin_cond_op.right, program);
             break;
+        case COND_NOT:
+            tm_ast_cond_bind(ast->u.un_cond_op, program);
+            break;
         default:
             warn("unknown tag %d", ast->tag);
     }

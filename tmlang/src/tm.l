@@ -29,6 +29,7 @@ CHAR ['].[']
 "elseif" { return TOKEN_ELSEIF; }
 "and" { return TOKEN_AND; }
 "or" { return TOKEN_OR; }
+"not" { return TOKEN_NOT; }
 "goto" { return TOKEN_GOTO; }
 "tape" { return TOKEN_TAPE; }
 "function" { return TOKEN_FUNCTION; }
