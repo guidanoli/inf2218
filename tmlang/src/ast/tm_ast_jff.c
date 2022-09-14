@@ -68,6 +68,17 @@ bool tm_ast_cond_eval(struct env_t* env, struct tm_ast_cond* ast)
     }
 }
 
+bool tm_ast_tape_contains_symbol(struct env_t* env, struct tm_ast_tape* tape, char symbol)
+{
+    struct tm_ast_symbol_list* symbol_list = tape->symbol_list;
+    for (struct tm_ast_symbol* s = symbol_list->first; s != NULL; s = s->next) {
+        if (s->symbol == symbol) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void tm_ast_stmt_run(struct env_t* env, struct tm_ast_stmt* ast)
 {
     switch (ast->tag) {
@@ -86,16 +97,20 @@ void tm_ast_stmt_run(struct env_t* env, struct tm_ast_stmt* ast)
             break;
         case STMT_WRITE:
         {
-            int tape_index = ast->u.write.tape_ref.tape->index;
+            struct tm_ast_tape* tape = ast->u.write.tape_ref.tape;
             char value = tm_ast_exp_eval(env, ast->u.write.value_exp);
-            env->next_tapes[tape_index] = value;
+            if (!tm_ast_tape_contains_symbol(env, tape, value)) {
+                fprintf(stderr, "Cannot write symbol '%c' in tape '%s' on state '%s'\n", value, tape->name, env->curr_state->name);
+                exit(1);
+            }
+            env->next_tapes[tape->index] = value;
             break;
         }
         case STMT_MOVE:
         {
-            int tape_index = ast->u.move.tape_ref.tape->index;
+            struct tm_ast_tape* tape = ast->u.move.tape_ref.tape;
             enum tm_ast_direction dir = ast->u.move.direction;
-            env->next_move[tape_index] = dir;
+            env->next_move[tape->index] = dir;
             break;
         }
         case STMT_CHSTATE:
