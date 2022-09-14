@@ -70,6 +70,9 @@ bool tm_ast_cond_eval(struct env_t* env, struct tm_ast_cond* ast)
 
 bool tm_ast_tape_contains_symbol(struct env_t* env, struct tm_ast_tape* tape, char symbol)
 {
+    if (symbol == '\0') {
+        return true;
+    }
     struct tm_ast_symbol_list* symbol_list = tape->symbol_list;
     for (struct tm_ast_symbol* s = symbol_list->first; s != NULL; s = s->next) {
         if (s->symbol == symbol) {
@@ -131,8 +134,15 @@ void tm_ast_env_run(struct env_t* env)
 
 void tm_ast_symbol_jff(char c)
 {
-    if (c != '\0') {
-        putchar(c);
+    // some characters need to be escaped (XML)
+    switch (c) {
+        case '\0': break; // blank doesn't need to be printed out
+        case '"': printf("&quot;"); break;
+        case '\'': printf("&apos;"); break;
+        case '<': printf("&lt;"); break;
+        case '>': printf("&gt;"); break;
+        case '&': printf("&amp;"); break;
+        default: putchar(c);
     }
 }
 
