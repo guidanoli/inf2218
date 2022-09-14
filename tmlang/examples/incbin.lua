@@ -1,6 +1,6 @@
 t = tape{'0', '1'}
 function s0()
-    if t == BLANK then
+    if t == nil then
         goto s1
         left(t)
     else
@@ -18,7 +18,7 @@ function s1()
     end
 end
 function s2()
-    if t == BLANK then
+    if t == nil then
         right(t)
         goto s3
     else

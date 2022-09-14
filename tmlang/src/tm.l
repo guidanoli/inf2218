@@ -41,7 +41,7 @@ CHAR ['].[']
     yylval.terminal.i = DIRECTION_RIGHT;
     return TOKEN_DIRECTION;
 }
-"BLANK" { return TOKEN_BLANK; }
+"nil" { return TOKEN_BLANK; }
 "==" { return TOKEN_EQ; }
 "~=" { return TOKEN_NEQ; }
 {ID} {

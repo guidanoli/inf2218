@@ -4,11 +4,11 @@ r = tape{'a', 'b', 'c'}
 
 -- Match f in w and replace it with r
 function m1()
-    if f == BLANK then
-        if w == BLANK then
+    if f == nil then
+        if w == nil then
             goto m4
         else
-            if r == BLANK then
+            if r == nil then
                 left(w)
                 left(r)
                 goto m8
@@ -32,7 +32,7 @@ end
 
 -- Undo replacement of r in w
 function m2()
-    if f == BLANK then
+    if f == nil then
         right(w)
         right(f)
         right(r)
@@ -53,7 +53,7 @@ end
 
 -- Copy r into w
 function m4()
-    if r == BLANK then
+    if r == nil then
         goto m5
     else
         w = r
@@ -64,13 +64,13 @@ end
 
 -- Find the last letter of w, f and r
 function m5()
-    if w == BLANK then
+    if w == nil then
         left(w)
     else
-        if f == BLANK then
+        if f == nil then
             left(f)
         else
-            if r == BLANK then
+            if r == nil then
                 left(r)
             else
                 goto m6
@@ -81,7 +81,7 @@ end
 
 -- Find the first letter of w
 function m6()
-    if w == BLANK then
+    if w == nil then
         right(w)
         goto m7
     else
@@ -91,22 +91,22 @@ end
 
 -- Erase f and r from right to left
 function m7()
-    if f == BLANK then
-        if r == BLANK then
+    if f == nil then
+        if r == nil then
             goto final
         else
-            r = BLANK
+            r = nil
             left(r)
         end
     else
-        f = BLANK
+        f = nil
         left(f)
     end
 end
 
 -- Check if there is a gap in w
 function m8()
-    if w == BLANK then
+    if w == nil then
         right(w)
         right(f)
         goto m9
@@ -117,13 +117,13 @@ end
 
 -- Move w to f
 function m9()
-    if w == BLANK then
+    if w == nil then
         left(w)
         left(f)
         goto m10
     else
         f = w
-        w = BLANK
+        w = nil
         right(w)
         right(f)
     end
@@ -131,10 +131,10 @@ end
 
 -- Find first blank after w and first letter of f
 function m10()
-    if w == BLANK then
+    if w == nil then
         left(w)
     else
-        if f == BLANK then
+        if f == nil then
             right(w)
             right(f)
             goto m11
@@ -146,11 +146,11 @@ end
 
 -- Move f to w
 function m11()
-    if f == BLANK then
+    if f == nil then
         goto m5
     else
         w = f
-        f = BLANK
+        f = nil
         right(w)
         right(f)
     end
@@ -158,7 +158,7 @@ end
 
 -- Copy w to f and r to w from left to right
 function m12()
-    if w == BLANK and r == BLANK then
+    if w == nil and r == nil then
         goto m13
     else
         f = w
@@ -171,10 +171,10 @@ end
 
 -- Find first blank after w and last letter of f
 function m13()
-    if w == BLANK then
+    if w == nil then
         left(w)
     else
-        if f == BLANK then
+        if f == nil then
             left(f)
         else
             right(w)
@@ -185,7 +185,7 @@ end
 
 -- Find first letter of f
 function m14()
-    if f == BLANK then
+    if f == nil then
         right(f)
         goto m15
     else
@@ -195,11 +195,11 @@ end
 
 -- Move f to w from left to right
 function m15()
-    if f == BLANK then
+    if f == nil then
         goto m5
     else
         w = f
-        f = BLANK
+        f = nil
         right(w)
         right(f)
     end
