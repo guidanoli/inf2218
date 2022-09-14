@@ -34,26 +34,26 @@ CHAR ['].[']
 "tape" { return TOKEN_TAPE; }
 "function" { return TOKEN_FUNCTION; }
 "left" {
-	yylval.terminal.i = DIRECTION_LEFT;
-	return TOKEN_DIRECTION;
+    yylval.terminal.i = DIRECTION_LEFT;
+    return TOKEN_DIRECTION;
 }
 "right" {
-	yylval.terminal.i = DIRECTION_RIGHT;
-	return TOKEN_DIRECTION;
+    yylval.terminal.i = DIRECTION_RIGHT;
+    return TOKEN_DIRECTION;
 }
 "BLANK" { return TOKEN_BLANK; }
 "==" { return TOKEN_EQ; }
 "~=" { return TOKEN_NEQ; }
 {ID} {
-	yylval.terminal.id = tm_memdup(yytext, yyleng+1);
-	return TOKEN_ID;
+    yylval.terminal.id = tm_memdup(yytext, yyleng+1);
+    return TOKEN_ID;
 }
 {CHAR} {
-	yylval.terminal.c = yytext[1];
-	return TOKEN_CHAR;
+    yylval.terminal.c = yytext[1];
+    return TOKEN_CHAR;
 }
 . { return yytext[0]; }
 %%
 int tm_get_lineno() {
-	return tm_lineno;
+    return tm_lineno;
 }

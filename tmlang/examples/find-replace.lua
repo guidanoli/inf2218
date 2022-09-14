@@ -2,19 +2,19 @@ w = tape{'a', 'b', 'c'}
 f = tape{'a', 'b', 'c'}
 r = tape{'a', 'b', 'c'}
 
-function matching()
+-- Match f in w and replace it with r
+function m1()
     if f == BLANK then
         if w == BLANK then
-            goto copy_r
+            goto m4
         else
             if r == BLANK then
                 left(w)
                 left(r)
-                goto check_w_blank
+                goto m8
             else
                 right(f)
-                goto w2f_and_r2w
-                -- insert rest of r in the middle of w
+                goto m12
             end
         end
     elseif w == f then
@@ -26,31 +26,35 @@ function matching()
         left(w)
         left(f)
         left(r)
-        goto undo
+        goto m2
     end
 end
 
-function undo()
+-- Undo replacement of r in w
+function m2()
     if f == BLANK then
         right(w)
         right(f)
         right(r)
-        goto skip_w
+        goto m3
     else
+        w = f
         left(w)
         left(f)
         left(r)
     end
 end
 
-function skip_w()
+-- Skip one letter of w
+function m3()
     right(w)
-    goto matching
+    goto m1
 end
 
-function copy_r()
+-- Copy r into w
+function m4()
     if r == BLANK then
-        goto find_ends
+        goto m5
     else
         w = r
         right(w)
@@ -58,7 +62,8 @@ function copy_r()
     end
 end
 
-function find_ends()
+-- Find the last letter of w, f and r
+function m5()
     if w == BLANK then
         left(w)
     else
@@ -68,22 +73,24 @@ function find_ends()
             if r == BLANK then
                 left(r)
             else
-                goto find_wstart
+                goto m6
             end
         end
     end
 end
 
-function find_wstart()
+-- Find the first letter of w
+function m6()
     if w == BLANK then
         right(w)
-        goto erase_fr
+        goto m7
     else
         left(w)
     end
 end
 
-function erase_fr()
+-- Erase f and r from right to left
+function m7()
     if f == BLANK then
         if r == BLANK then
             goto final
@@ -97,21 +104,23 @@ function erase_fr()
     end
 end
 
-function check_w_blank()
+-- Check if there is a gap in w
+function m8()
     if w == BLANK then
         right(w)
         right(f)
-        goto move_w_to_f
+        goto m9
     else
-        goto find_ends
+        goto m5
     end
 end
 
-function move_w_to_f()
+-- Move w to f
+function m9()
     if w == BLANK then
         left(w)
         left(f)
-        goto wend_and_fstart
+        goto m10
     else
         f = w
         w = BLANK
@@ -120,23 +129,25 @@ function move_w_to_f()
     end
 end
 
-function wend_and_fstart()
+-- Find first blank after w and first letter of f
+function m10()
     if w == BLANK then
         left(w)
     else
         if f == BLANK then
             right(w)
             right(f)
-            goto move_f_to_w
+            goto m11
         else
             left(f)
         end
     end
 end
 
-function move_f_to_w()
+-- Move f to w
+function m11()
     if f == BLANK then
-        goto find_ends
+        goto m5
     else
         w = f
         f = BLANK
@@ -145,9 +156,10 @@ function move_f_to_w()
     end
 end
 
-function w2f_and_r2w()
+-- Copy w to f and r to w from left to right
+function m12()
     if w == BLANK and r == BLANK then
-        goto find_wend_and_fend
+        goto m13
     else
         f = w
         w = r
@@ -157,7 +169,8 @@ function w2f_and_r2w()
     end
 end
 
-function find_wend_and_fend()
+-- Find first blank after w and last letter of f
+function m13()
     if w == BLANK then
         left(w)
     else
@@ -165,23 +178,25 @@ function find_wend_and_fend()
             left(f)
         else
             right(w)
-            goto find_fstart
+            goto m14
         end
     end
 end
 
-function find_fstart()
+-- Find first letter of f
+function m14()
     if f == BLANK then
         right(f)
-        goto move_f2w
+        goto m15
     else
         left(f)
     end
 end
 
-function move_f2w()
+-- Move f to w from left to right
+function m15()
     if f == BLANK then
-        goto find_ends
+        goto m5
     else
         w = f
         f = BLANK
@@ -190,5 +205,5 @@ function move_f2w()
     end
 end
 
-function final()
-end
+-- End of match
+function final() end

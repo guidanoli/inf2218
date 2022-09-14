@@ -9,13 +9,13 @@ YYSTYPE yylval;
 
 int main(int argc, char** argv)
 {
-	int tk;
-	while (tk = yylex()) {
-		switch (tk) {
-			case TOKEN_ID:
-				printf("ID \"%s\"\n", yylval.terminal.id);
-				free(yylval.terminal.id);
-				break;
+    int tk;
+    while (tk = yylex()) {
+        switch (tk) {
+            case TOKEN_ID:
+                printf("ID \"%s\"\n", yylval.terminal.id);
+                free(yylval.terminal.id);
+                break;
             case TOKEN_TAPE:
                 printf("TAPE\n");
                 break;
@@ -49,13 +49,13 @@ int main(int argc, char** argv)
             case TOKEN_CHAR:
                 printf("CHAR TOKEN '%c'\n", yylval.terminal.c);
                 break;
-			default:
-				if (tk >= 0 && tk <= UCHAR_MAX)
-					printf("CHAR '%c'\n", (char)tk);
-				else
-					printf("UNKNOWN %d\n", tk);
-				break;
-		}
-	}
-	return EXIT_SUCCESS;
+            default:
+                if (tk >= 0 && tk <= UCHAR_MAX)
+                    printf("CHAR '%c'\n", (char)tk);
+                else
+                    printf("UNKNOWN %d\n", tk);
+                break;
+        }
+    }
+    return EXIT_SUCCESS;
 }

@@ -5,64 +5,64 @@
 	<tapes>3</tapes>
 	<automaton>
 		<!--The list of states.-->
-		<state id="0" name="matching">
+		<state id="0" name="m1">
 			<x>0</x>
 			<y>0</y>
 			<initial/>
 		</state>
-		<state id="1" name="undo">
+		<state id="1" name="m2">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="2" name="skip_w">
+		<state id="2" name="m3">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="3" name="copy_r">
+		<state id="3" name="m4">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="4" name="find_ends">
+		<state id="4" name="m5">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="5" name="find_wstart">
+		<state id="5" name="m6">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="6" name="erase_fr">
+		<state id="6" name="m7">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="7" name="check_w_blank">
+		<state id="7" name="m8">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="8" name="move_w_to_f">
+		<state id="8" name="m9">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="9" name="wend_and_fstart">
+		<state id="9" name="m10">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="10" name="move_f_to_w">
+		<state id="10" name="m11">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="11" name="w2f_and_r2w">
+		<state id="11" name="m12">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="12" name="find_wend_and_fend">
+		<state id="12" name="m13">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="13" name="find_fstart">
+		<state id="13" name="m14">
 			<x>0</x>
 			<y>0</y>
 		</state>
-		<state id="14" name="move_f2w">
+		<state id="14" name="m15">
 			<x>0</x>
 			<y>0</y>
 		</state>
@@ -960,7 +960,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -973,7 +973,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -986,7 +986,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -999,7 +999,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1012,7 +1012,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1025,7 +1025,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1038,7 +1038,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1051,7 +1051,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">a</read>
-			<write tape="1">a</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1116,7 +1116,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1129,7 +1129,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1142,7 +1142,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1155,7 +1155,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1220,7 +1220,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1233,7 +1233,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1246,7 +1246,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1259,7 +1259,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">b</read>
-			<write tape="1">b</write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1324,7 +1324,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1337,7 +1337,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1350,7 +1350,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1363,7 +1363,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1376,7 +1376,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1389,7 +1389,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1402,7 +1402,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1415,7 +1415,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1">c</read>
-			<write tape="1">c</write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1532,7 +1532,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1545,7 +1545,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1558,7 +1558,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1571,7 +1571,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">a</write>
 			<move tape="1">L</move>
 			<read tape="2">a</read>
 			<write tape="2">a</write>
@@ -1584,7 +1584,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1597,7 +1597,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1610,7 +1610,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1623,7 +1623,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">b</write>
 			<move tape="1">L</move>
 			<read tape="2">b</read>
 			<write tape="2">b</write>
@@ -1636,7 +1636,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1649,7 +1649,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1662,7 +1662,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>
@@ -1675,7 +1675,7 @@
 			<from>1</from>
 			<to>1</to>
 			<read tape="1"></read>
-			<write tape="1"></write>
+			<write tape="1">c</write>
 			<move tape="1">L</move>
 			<read tape="2">c</read>
 			<write tape="2">c</write>

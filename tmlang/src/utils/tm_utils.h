@@ -8,13 +8,11 @@
 
 int tm_get_lineno();
 
-void* tm_memdup(
-	const void* mem,
-	size_t size);
+void* tm_memdup(const void* mem, size_t size);
 
 void indent(int depth);
 
 #define warn(s, ...) \
-	fprintf(stderr, __FILE__ ":%d: " s "\n", __LINE__, __VA_ARGS__)
+    fprintf(stderr, __FILE__ ":%d: " s "\n", __LINE__, __VA_ARGS__)
 
 #endif
