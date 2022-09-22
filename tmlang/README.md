@@ -8,16 +8,60 @@ To solve this issue, I've made this Lua-like programming language that helps bri
 We've decide to use Lua syntax because of its simplicity and ease of implementation.
 Also, because most code editors already have syntax highlighters for Lua files.
 
+## Syntax
+
+```
+program := tape+ state+
+tape := tape_name '=' 'tape' '{' symbol [ ',' symbol ]* '}'
+state := 'function' state_name '()' stmt 'end'
+stmt := if_stmt | write_stmt | move_stmt | goto_stmt |
+if_stmt := 'if' cond 'then' stmt else_stmt 'end'
+cond := or_cond
+or_cond := or_cond 'or' and_cond | and_cond
+and_cond := and_cond 'and' not_cond | not_cond
+not_cond := 'not' cmp_cond | cmp_cond
+cmp_cond := exp '==' exp | exp '~=' exp | primary_cond
+exp := 'nil' | symbol | tape_name
+primary_cond := '(' cond ')'
+else_stmt := 'else' stmt | 'elseif' cond 'then' stmt else_stmt |
+write_stmt := tape_name '=' exp
+move_stmt := direction '(' tape_name ')'
+direction := 'left' | 'right'
+```
+
+## Tapes
+
+Tapes are given names and have a set of valid characters. The compiler prohibits you from writing characters to a tape that are not contained in that set.
+There has to be at least 1 tape. There can't be more than 5 tapes because JFLAP does not support it.
+
+## States
+
+Each state has an action associated with it. The compiler runs the action for all the possible values in each tape and produces all the transitions automatically.
+There has to be at least one state. The first state is the initial one and the last state is the final one, always. The final state action is ignored and produces no transitions.
+
+## Statements
+
+Some statements might have a misleading effect. For example, write and goto statements aren't immediate like in Lua. Their effect is only applied at the end of the action code.
+
+## Tested environments
+
+* Ubuntu 22.04.1 LTS
+
+## Dependencies
+
+* CMake >= 3.0.0
+* Flex >= 2.6.4
+* Bison >= 3.8.2
+
 ## Setup
 
-1. Install CMake
-2. Setup a build directory
+1. Setup a build directory
 
 ```sh
 cmake -B build
 ```
 
-3. Build the executables
+2. Build the executables
 
 ```sh
 cmake --build build
@@ -41,3 +85,4 @@ java -jar JFLAP.jar foo.jff
 ### Example
 
 You can run one of the examples in the `examples/` directory.
+Some of them are already compiled!
