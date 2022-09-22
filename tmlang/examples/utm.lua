@@ -30,7 +30,7 @@ function init2()
         m = nil
         w = 'Q'
         left(m)
-        goto pre1
+        goto q1
     elseif m == 'S' or m == '1' then
         w = m
         m = nil
@@ -52,10 +52,10 @@ end
 ---------------------------------------
 
 -- Go to the start of m
-function pre1()
+function q1()
     if m == nil then
         right(m)
-        goto pre2
+        goto q2
     else
         left(m)
     end
@@ -73,10 +73,10 @@ end
 ---------------------------------------
 
 -- Go to the start of w
-function pre2()
+function q2()
     if w == nil then
         right(w)
-        goto pre3
+        goto q3
     else
         left(w)
     end
@@ -92,19 +92,19 @@ end
 ---------------------------------------
 
 -- Check left symbol
-function pre3()
+function q3()
     if w == 'Q' then
         left(w)
-        goto pre4
+        goto q4
     else
-        goto pre5
+        goto q5
     end
 end
 
 -- Write left symbol
-function pre4()
+function q4()
     w = 'S'
-    goto pre5
+    goto q5
 end
 
 ---------------------------------------
@@ -116,43 +116,43 @@ end
 ---------------------------------------
 
 -- Find cursor
-function pre5()
+function q5()
     if w == 'Q' then
-        goto pre6
+        goto q6
     else
         right(w)
     end
 end
 
 -- Check right symbol
-function pre6()
+function q6()
     if w == 'S' then
         left(w)
-        goto pre7
+        goto q7
     elseif w == nil then
         w = 'S'
         left(w)
-        goto pre7
+        goto q7
     else
         right(w)
     end
 end
 
 -- Find cursor
-function pre7()
+function q7()
     if w == 'Q' then
         left(w)
-        goto pre8
+        goto q8
     else
         left(w)
     end
 end
 
 -- Copy left symbol to e
-function pre8()
+function q8()
     if w == 'S' then
         e = w
-        goto pre9
+        goto q9
     elseif w ~= 'Q' then
         e = w
         left(w)
@@ -161,9 +161,9 @@ function pre8()
 end
 
 -- Find cursor
-function pre9()
+function q9()
     if w == 'Q' then
-        goto pre10
+        goto q10
     else
         right(w)
     end
@@ -178,12 +178,12 @@ end
 ---------------------------------------
 
 -- Copy state to f
-function pre10()
+function q10()
     if w == 'S' then
         f = w
         right(w)
         right(f)
-        goto pre11
+        goto q11
     else
         f = w
         right(w)
@@ -192,11 +192,11 @@ function pre10()
 end
 
 -- Copy symbol to f
-function pre11()
+function q11()
     if w == 'S' then
         left(w)
         left(f)
-        goto pre12
+        goto q12
     else
         f = w
         right(w)
@@ -205,20 +205,20 @@ function pre11()
 end
 
 -- Go to start of w
-function pre12()
+function q12()
     if w == nil then
         right(w)
-        goto pre13
+        goto q13
     else
         left(w)
     end
 end
 
 -- Go to start of f
-function pre13()
+function q13()
     if f == nil then
-        f = '<'
-        goto halt
+        right(f)
+        goto q14
     else
         left(f)
     end
@@ -227,11 +227,74 @@ end
 ---------------------------------------
 -- m: #(<Q1*S1*Q1*S1*[ED]>)*
 -- w: #(S1*)+Q1*(S1*)+
--- f: #<Q1*S1*
+-- f: #Q1*S1*
 -- r: #
 -- e: #S1*
 ---------------------------------------
 
+-- Find next transition
+function q14()
+    if m == '<' then
+        right(m)
+        goto q15
+    else
+        right(m)
+    end
+end
+
+-- Match Q
+function q15()
+    if m == 'Q' and f == 'Q' then
+        right(m)
+        right(f)
+        goto q16
+    else
+        goto q14
+    end
+end
+
+-- Match Q number and S
+function q16()
+    if m == '1' and f == '1' then
+        right(m)
+        right(f)
+    elseif m == 'S' and f == 'S' then
+        right(m)
+        right(f)
+        goto q17
+    else
+        goto q14
+    end
+end
+
+-- Match S number and end
+function q17()
+    if m == '1' and f == '1' then
+        right(m)
+        right(f)
+    elseif m == 'Q' and f == nil then
+        goto q18
+    else
+        goto q14
+    end
+end
+
+-- Go to end of transition
+function q18()
+    if m == '>' then
+        left(m)
+        goto q19
+    else
+        right(m)
+    end
+end
+
+-- Check movement
+function q19()
+    if m == 'E' then
+    elseif m == 'D' then
+    end
+end
 
 ---------------------------------------
 -- m: #(<Q1*S1*Q1*S1*[ED]>)*
