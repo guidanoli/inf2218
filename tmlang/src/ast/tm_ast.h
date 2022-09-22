@@ -143,5 +143,6 @@ void tm_ast_program_destroy(struct tm_ast_program* ast);
 void tm_ast_program_print(struct tm_ast_program* ast);
 void tm_ast_program_bind(struct tm_ast_program* ast);
 void tm_ast_program_jff(struct tm_ast_program* ast);
+void tm_ast_program_repr(struct tm_ast_program* ast);
 
 #endif
