@@ -1,114 +1,244 @@
 -- Universal Turing Machine
 
-w = tape{'Q', 'S', '1', 'E', 'D', '<', '>', '$'}
 m = tape{'Q', 'S', '1', 'E', 'D', '<', '>', '$'}
-f = tape{'Q', 'S', '1'}
+w = tape{'Q', 'S', '1'}
+f = tape{'<', 'Q', 'S', '1'}
 r = tape{'Q', 'S', '1'}
+e = tape{'S', '1'}
 
--- w: (<Q1*S1*Q1*S1*[ED]>)*$(S1*)*
--- m:
--- f:
--- r:
+---------------------------------------
+-- m: #(<Q1*S1*Q1*S1*[ED]>)*$(S1*)*
+-- w: #
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
 
--- Copy machine code from m to w
+-- Go to the end of m
 function init1()
-    if w == '$' then
-        w = 'Q'
+    if m == nil then
         left(m)
-        goto pre1
+        goto init2
     else
-        m = w
-        w = nil
-        right(w)
         right(m)
     end
 end
 
--- w: (S1*)*Q1*(S1*)*  <-- pointer somewhere in the middle
--- m: (<Q1*S1*Q1*S1*[ED]>)* <-- pointer somewhere in the middle
--- f: .* <-- pointer in the last character
--- r: .* <-- pointer in the last character
+-- Move m to w until '$'
+function init2()
+    if m == '$' then
+        m = nil
+        w = 'Q'
+        left(m)
+        goto pre1
+    elseif m == 'S' or m == '1' then
+        w = m
+        m = nil
+        left(m)
+        left(w)
+    end
+end
 
--- Move cursor to beggining of w
+---------------------------------------
+-- m: m1#m2
+-- w: w1#w2
+-- f: #
+-- r: #
+-- e: #
+--
+-- where
+-- m1 . m2 = (<Q1*S1*Q1*S1*[ED]>)*
+-- w1 . w2 = (S1*)*Q1*(S1*)*
+---------------------------------------
+
+-- Go to the start of m
 function pre1()
+    if m == nil then
+        right(m)
+        goto pre2
+    else
+        left(m)
+    end
+end
+
+---------------------------------------
+-- m: #(<Q1*S1*Q1*S1*[ED]>)*
+-- w: w1#w2
+-- f: #
+-- r: #
+-- e: #
+--
+-- where
+-- w1 . w2 = (S1*)*Q1*(S1*)*
+---------------------------------------
+
+-- Go to the start of w
+function pre2()
     if w == nil then
         right(w)
-        goto pre2
+        goto pre3
+    else
+        left(w)
+    end
+
+end
+
+---------------------------------------
+-- m: #(<Q1*S1*Q1*S1*[ED]>)*
+-- w: #(S1*)*Q1*(S1*)*
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
+
+-- Check left symbol
+function pre3()
+    if w == 'Q' then
+        left(w)
+        goto pre4
+    else
+        goto pre5
+    end
+end
+
+-- Write left symbol
+function pre4()
+    w = 'S'
+    goto pre5
+end
+
+---------------------------------------
+-- m: #(<Q1*S1*Q1*S1*[ED]>)*
+-- w: #(S1*)+Q1*(S1*)*
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
+
+-- Find cursor
+function pre5()
+    if w == 'Q' then
+        goto pre6
+    else
+        right(w)
+    end
+end
+
+-- Check right symbol
+function pre6()
+    if w == 'S' then
+        left(w)
+        goto pre7
+    elseif w == nil then
+        w = 'S'
+        left(w)
+        goto pre7
+    else
+        right(w)
+    end
+end
+
+-- Find cursor
+function pre7()
+    if w == 'Q' then
+        left(w)
+        goto pre8
     else
         left(w)
     end
 end
 
--- Move cursor to beggining of m
-function pre2()
-    if m == nil then
-        right(m)
-        goto pre3
-    else
-        left(m)
+-- Copy left symbol to e
+function pre8()
+    if w == 'S' then
+        e = w
+        goto pre9
+    elseif w ~= 'Q' then
+        e = w
+        left(w)
+        left(e)
     end
 end
 
--- Clean f and r
-function pre3()
-    if f == nil then
-        if r == nil then
-            goto pre4
-        else
-            r = nil
-            left(w)
-        end
+-- Find cursor
+function pre9()
+    if w == 'Q' then
+        goto pre10
     else
-        f = nil
+        right(w)
+    end
+end
+
+---------------------------------------
+-- m: #(<Q1*S1*Q1*S1*[ED]>)*
+-- w: (S1*)+#Q1*(S1*)+
+-- f: #
+-- r: #
+-- e: #S1*
+---------------------------------------
+
+-- Copy state to f
+function pre10()
+    if w == 'S' then
+        f = w
+        right(w)
+        right(f)
+        goto pre11
+    else
+        f = w
+        right(w)
+        right(f)
+    end
+end
+
+-- Copy symbol to f
+function pre11()
+    if w == 'S' then
+        left(w)
+        left(f)
+        goto pre12
+    else
+        f = w
+        right(w)
+        right(f)
+    end
+end
+
+-- Go to start of w
+function pre12()
+    if w == nil then
+        right(w)
+        goto pre13
+    else
+        left(w)
+    end
+end
+
+-- Go to start of f
+function pre13()
+    if f == nil then
+        f = '<'
+        goto halt
+    else
         left(f)
     end
 end
 
--- Find leftmost 'Q' in w then go left
-function pre4()
-    if w == 'Q' then
-        left(w)
-        goto pre5
-    else
-        right(w)
-    end
-end
+---------------------------------------
+-- m: #(<Q1*S1*Q1*S1*[ED]>)*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #<Q1*S1*
+-- r: #
+-- e: #S1*
+---------------------------------------
 
--- Write 'S' before 'Q' in w if nil
-function pre5()
-    if w == nil then
-        w = 'S'
-    end
-    right(w)
-    goto pre6
-end
 
--- Find leftmost S or nil in w
-function pre6()
-    if w == nil then
-        w = 'S'
-        left(w)
-        goto pre7
-    elseif w == 'S' then
-        left(w)
-        goto pre7
-    else
-        right(w)
-    end
-end
-
--- Find rightmost Q in w
-function pre7()
-    if w == 'Q' then
-        goto halt
-    else
-        left(w)
-    end
-end
-
--- w: (S1*)+Q1*(S1*)+
--- m: (<Q1*S1*Q1*S1*[ED]>)*
--- f:
--- r:
+---------------------------------------
+-- m: #(<Q1*S1*Q1*S1*[ED]>)*
+-- w: (S1*)+#Q1*(S1*)+
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
 
 function halt() end
