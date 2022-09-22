@@ -67,7 +67,7 @@ cmake -B build
 cmake --build build
 ```
 
-### Usage
+### Compiling to JFLAP
 
 The compiler always reads from `stdin` and spits out the result to `stdout`.
 Use pipes to redirect these streams to the appropriate files.
@@ -81,6 +81,35 @@ Then, you can load the JFF file on JFLAP.
 ```sh
 java -jar JFLAP.jar foo.jff
 ```
+
+### Compiling to TM representation
+
+For the universal Turing Machine, we use the following representation:
+
+```
+(<Q1*S1*Q1*S1*[ED]>)*
+```
+
+The first part stands for the current state.
+The second part stands for the current symbol.
+The third part stands for the next state.
+The fourth part stands for the next symbol.
+The fifth part stands for the direction.
+
+Only single-taped Turing machines are supported.
+
+`Q` is the initial machine state and `Q1` is the final machine state.
+`S` is the blank character.
+`E` stands for left and `D` stands for right.
+"Stop" movements are not allowed.
+
+You can compile TMs like so:
+
+```sh
+./build/src/repr/tm_repr < foo.lua
+```
+
+This will print out a representation of the Turing Machine.
 
 ### Example
 
