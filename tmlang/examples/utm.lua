@@ -2,7 +2,7 @@
 
 m = tape{'Q', 'S', '1', 'E', 'D', '<', '>', '$'}
 w = tape{'Q', 'S', '1'}
-f = tape{'<', 'Q', 'S', '1'}
+f = tape{'Q', 'S', '1'}
 r = tape{'Q', 'S', '1'}
 e = tape{'S', '1'}
 
@@ -41,46 +41,23 @@ end
 
 ---------------------------------------
 -- m: m1#m2
--- w: w1#w2
+-- w: #(S1*)*Q1*(S1*)*
 -- f: #
 -- r: #
 -- e: #
 --
 -- where
 -- m1 . m2 = (<Q1*S1*Q1*S1*[ED]>)*
--- w1 . w2 = (S1*)*Q1*(S1*)*
 ---------------------------------------
 
 -- Go to the start of m
 function q1()
     if m == nil then
         right(m)
-        goto q2
+        goto q3
     else
         left(m)
     end
-end
-
----------------------------------------
--- m: #(<Q1*S1*Q1*S1*[ED]>)*
--- w: w1#w2
--- f: #
--- r: #
--- e: #
---
--- where
--- w1 . w2 = (S1*)*Q1*(S1*)*
----------------------------------------
-
--- Go to the start of w
-function q2()
-    if w == nil then
-        right(w)
-        goto q3
-    else
-        left(w)
-    end
-
 end
 
 ---------------------------------------
@@ -97,14 +74,15 @@ function q3()
         left(w)
         goto q4
     else
-        goto q5
+        goto q5a
     end
 end
 
 -- Write left symbol
 function q4()
     w = 'S'
-    goto q5
+    right(w)
+    goto q5a
 end
 
 ---------------------------------------
@@ -116,11 +94,33 @@ end
 ---------------------------------------
 
 -- Find cursor
-function q5()
+function q5a()
     if w == 'Q' then
-        goto q6
+        right(w)
+        goto q5b
     else
         right(w)
+    end
+end
+
+-- Check if final state was reached (1/2)
+function q5b()
+    if w == '1' then
+        right(w)
+        goto q5c
+    else
+        goto q6
+    end
+end
+
+-- Check if final state was reached (2/2)
+function q5c()
+    if w == nil or w == 'S' then
+        left(w)
+        goto f1
+    else
+        right(w)
+        goto q6
     end
 end
 
@@ -148,14 +148,17 @@ function q7()
     end
 end
 
--- Copy left symbol to e
+-- Copy left symbol to e and f
 function q8()
     if w == 'S' then
+        f = w
         e = w
         goto q9
     elseif w ~= 'Q' then
+        f = w
         e = w
         left(w)
+        left(f)
         left(e)
     end
 end
@@ -163,16 +166,25 @@ end
 -- Find cursor
 function q9()
     if w == 'Q' then
-        goto q10
+        goto q9a
     else
         right(w)
+    end
+end
+
+-- Go to the end of f
+function q9a()
+    if f == nil then
+        goto q10
+    else
+        right(f)
     end
 end
 
 ---------------------------------------
 -- m: #(<Q1*S1*Q1*S1*[ED]>)*
 -- w: (S1*)+#Q1*(S1*)+
--- f: #
+-- f: S1*#
 -- r: #
 -- e: #S1*
 ---------------------------------------
@@ -193,7 +205,7 @@ end
 
 -- Copy symbol to f
 function q11()
-    if w == 'S' then
+    if w == 'S' or w == nil then
         left(w)
         left(f)
         goto q12
@@ -218,16 +230,28 @@ end
 function q13()
     if f == nil then
         right(f)
-        goto q14
+        goto q13a
     else
         left(f)
     end
 end
 
+-- Find Q in f
+function q13a()
+    if f == 'Q' then
+        goto q14
+    else
+        right(f)
+    end
+end
+
 ---------------------------------------
--- m: #(<Q1*S1*Q1*S1*[ED]>)*
+-- TR = <Q1*S1*Q1*S1*[ED]>
+-- m1 . m2 = TR
+--
+-- m: TR*m1#m2TR*
 -- w: #(S1*)+Q1*(S1*)+
--- f: #Q1*S1*
+-- f: S1*#Q1*S1*
 -- r: #
 -- e: #S1*
 ---------------------------------------
@@ -273,9 +297,21 @@ function q17()
         right(m)
         right(f)
     elseif m == 'Q' and f == nil then
+        left(f)
+        goto q17a
+    else
+        left(f)
+        goto q13
+    end
+end
+
+-- Go to the start of f
+function q17a()
+    if f == nil then
+        right(f)
         goto q18
     else
-        goto q14
+        left(f)
     end
 end
 
@@ -291,14 +327,539 @@ end
 
 -- Check movement
 function q19()
-    if m == 'E' then
-    elseif m == 'D' then
+    if m == 'D' then
+        goto q20a
+    elseif m == 'E' then
+        goto q21a
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*S1*#D>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: #
+-- e: #S1*
+---------------------------------------
+
+-- Move e to r
+function q20a()
+    if e == nil then
+        goto q20b
+    else
+        r = e
+        e = nil
+        right(r)
+        right(e)
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*S1*#D>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: S1*#
+-- e: #
+---------------------------------------
+
+-- Go to the beggining of S in m
+function q20b()
+    if m == 'S' then
+        r = m
+        right(r)
+        right(m)
+        goto q20c
+    else
+        left(m)
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*S#1*D>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: S1*S#
+-- e: #
+---------------------------------------
+
+-- Copy 1s from m to r until not 1
+function q20c()
+    if m == '1' then
+        r = m
+        right(r)
+        right(m)
+    else
+        goto q20d
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*S1*#D>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: S1*S1*#
+-- e: #
+---------------------------------------
+
+-- Go to the beggining of Q in m
+function q20d()
+    if m == 'Q' then
+        r = m
+        right(r)
+        right(m)
+        goto q20e
+    else
+        left(m)
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q#1*S1*D>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: S1*S1*Q#
+-- e: #
+---------------------------------------
+
+-- Copy 1s from m to r until not 1
+function q20e()
+    if m == '1' then
+        r = m
+        right(r)
+        right(m)
+    else
+        left(r)
+        goto q22
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*S1*#E>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: #
+-- e: #S1*
+---------------------------------------
+
+-- Go to Q in m
+function q21a()
+    if m == 'Q' then
+        r = m
+        right(m)
+        right(r)
+        goto q21b
+    else
+        left(m)
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q#1*S1*E>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: Q#
+-- e: #S1*
+---------------------------------------
+
+-- Copy m to r until 'S'
+function q21b()
+    if m == '1' then
+        r = m
+        right(m)
+        right(r)
+    else
+        goto q21c
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*#S1*E>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: Q1*#
+-- e: #S1*
+---------------------------------------
+
+-- Move e to r
+function q21c()
+    if e == nil then
+        goto q21d
+    else
+        r = e
+        e = nil
+        right(r)
+        right(e)
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*#S1*E>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: Q1*S1*#
+-- e: #
+---------------------------------------
+
+-- Copy m to r until not S or 1
+function q21d()
+    if m == 'S' or m == '1' then
+        r = m
+        right(m)
+        right(r)
+    else
+        left(r)
+        goto q22
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*#S1*[ED]>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: ([QS]1*)*#[QS1]
+-- e: #
+---------------------------------------
+
+-- Go to the start of r
+function q22()
+    if r == nil then
+        right(r)
+        goto m1
+    else
+        left(r)
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+--
+-- m: TR*<Q1*S1*Q1*#S1*[ED]>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: #([QS]1*)*
+-- e: #
+---------------------------------------
+
+-- Match f in w and replace it with r
+function m1()
+    if f == nil then
+        if w == nil then
+            goto m4
+        else
+            if r == nil then
+                left(w)
+                left(r)
+                goto m8
+            else
+                right(f)
+                goto m12
+            end
+        end
+    elseif w == f then
+        w = r
+        right(w)
+        right(f)
+        right(r)
+    else
+        left(w)
+        left(f)
+        left(r)
+        goto m2
+    end
+end
+
+-- Undo replacement of r in w
+function m2()
+    if f == nil then
+        right(w)
+        right(f)
+        right(r)
+        goto m3
+    else
+        w = f
+        left(w)
+        left(f)
+        left(r)
+    end
+end
+
+-- Skip one letter of w
+function m3()
+    right(w)
+    goto m1
+end
+
+-- Copy r into w
+function m4()
+    if r == nil then
+        goto m5
+    else
+        w = r
+        right(w)
+        right(r)
+    end
+end
+
+-- Find the last letter of w, f and r
+function m5()
+    if w == nil then
+        left(w)
+    else
+        if f == nil then
+            left(f)
+        else
+            if r == nil then
+                left(r)
+            else
+                goto m6
+            end
+        end
+    end
+end
+
+-- Find the first letter of w
+function m6()
+    if w == nil then
+        right(w)
+        goto m7
+    else
+        left(w)
+    end
+end
+
+-- Erase f and r from right to left
+function m7()
+    if f == nil then
+        if r == nil then
+            goto q1
+        else
+            r = nil
+            left(r)
+        end
+    else
+        f = nil
+        left(f)
+    end
+end
+
+-- Check if there is a gap in w
+function m8()
+    if w == nil then
+        right(w)
+        right(f)
+        goto m9
+    else
+        goto m5
+    end
+end
+
+-- Move w to f
+function m9()
+    if w == nil then
+        left(w)
+        left(f)
+        goto m10
+    else
+        f = w
+        w = nil
+        right(w)
+        right(f)
+    end
+end
+
+-- Find first blank after w and first letter of f
+function m10()
+    if w == nil then
+        left(w)
+    else
+        if f == nil then
+            right(w)
+            right(f)
+            goto m11
+        else
+            left(f)
+        end
+    end
+end
+
+-- Move f to w
+function m11()
+    if f == nil then
+        goto m5
+    else
+        w = f
+        f = nil
+        right(w)
+        right(f)
+    end
+end
+
+-- Copy w to f and r to w from left to right
+function m12()
+    if w == nil and r == nil then
+        goto m13
+    else
+        f = w
+        w = r
+        right(w)
+        right(f)
+        right(r)
+    end
+end
+
+-- Find first blank after w and last letter of f
+function m13()
+    if w == nil then
+        left(w)
+    else
+        if f == nil then
+            left(f)
+        else
+            right(w)
+            goto m14
+        end
+    end
+end
+
+-- Find first letter of f
+function m14()
+    if f == nil then
+        right(f)
+        goto m15
+    else
+        left(f)
+    end
+end
+
+-- Move f to w from left to right
+function m15()
+    if f == nil then
+        goto m5
+    else
+        w = f
+        f = nil
+        right(w)
+        right(f)
     end
 end
 
 ---------------------------------------
 -- m: #(<Q1*S1*Q1*S1*[ED]>)*
--- w: (S1*)+#Q1*(S1*)+
+-- w: (S1*)+Q#1(S1*)*
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
+
+-- Clean m
+function f1()
+    if m == nil then
+        goto f2
+    else
+        m = nil
+        right(m)
+    end
+end
+
+---------------------------------------
+-- m: #
+-- w: (S1*)+Q#1(S1*)*
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
+
+-- Go to the start of w
+function f2()
+    if w == nil then
+        right(w)
+        goto f3
+    else
+        left(w)
+    end
+end
+
+---------------------------------------
+-- m: (S1*)*#
+-- w: #(S1*)*(Q1)?(S1*)*
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
+
+-- Move w to m, ignoring 'Q1'
+function f3()
+    if w == nil then
+        left(m)
+        goto f5
+    elseif w == 'Q' then
+        w = nil
+        right(w)
+        goto f4
+    else
+        m = w
+        w = nil
+        right(m)
+        right(w)
+    end
+end
+
+---------------------------------------
+-- m: (S1*)*#
+-- w: #1(S1*)*
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
+
+-- Remove 1
+function f4()
+    w = nil
+    right(w)
+    goto f3
+end
+
+---------------------------------------
+-- m: (S1*)*#.
+-- w: #
+-- f: #
+-- r: #
+-- e: #
+---------------------------------------
+
+-- Go to the start of m
+function f5()
+    if m == nil then
+        right(m)
+        goto halt
+    else
+        left(m)
+    end
+end
+
+---------------------------------------
+-- m: #(S1*)*
+-- w: #
 -- f: #
 -- r: #
 -- e: #

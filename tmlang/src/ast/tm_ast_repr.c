@@ -49,7 +49,7 @@ static void tm_ast_vm_repr_aux2(struct vm_t* vm, char* symtable)
     tm_vm_run(vm);
 
     if (vm->next_moves[0] == DIRECTION_STOP) {
-        fprintf(stderr, "Cannot represent STOP (state %s, symbol %c)\n", vm->curr_state->index, vm->curr_tapes[0]);
+        fprintf(stderr, "Cannot represent STOP (state %s, symbol %c)\n", vm->curr_state->name, vm->curr_tapes[0]);
         exit(1);
     }
 
