@@ -273,7 +273,7 @@ function q15()
         right(f)
         goto q16
     else
-        goto q14
+        goto q13
     end
 end
 
@@ -287,7 +287,7 @@ function q16()
         right(f)
         goto q17
     else
-        goto q14
+        goto q13
     end
 end
 
