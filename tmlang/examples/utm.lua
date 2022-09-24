@@ -4,14 +4,12 @@ m = tape{'Q', 'S', '1', 'E', 'D', '<', '>', '$'}
 w = tape{'Q', 'S', '1'}
 f = tape{'Q', 'S', '1'}
 r = tape{'Q', 'S', '1'}
-e = tape{'S', '1'}
 
 ---------------------------------------
 -- m: #(<Q1*S1*Q1*S1*[ED]>)*$(S1*)*
 -- w: #
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Go to the end of m
@@ -44,7 +42,6 @@ end
 -- w: #(S1*)*Q1*(S1*)*
 -- f: #
 -- r: #
--- e: #
 --
 -- where
 -- m1 . m2 = (<Q1*S1*Q1*S1*[ED]>)*
@@ -65,7 +62,6 @@ end
 -- w: #(S1*)*Q1*(S1*)*
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Check left symbol
@@ -90,7 +86,6 @@ end
 -- w: #(S1*)+Q1*(S1*)*
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Find cursor
@@ -148,18 +143,18 @@ function q7()
     end
 end
 
--- Copy left symbol to e and f
+-- Copy left symbol to r and f
 function q8()
     if w == 'S' then
         f = w
-        e = w
+        r = w
         goto q9
-    elseif w ~= 'Q' then
+    else
         f = w
-        e = w
+        r = w
         left(w)
         left(f)
-        left(e)
+        left(r)
     end
 end
 
@@ -185,8 +180,7 @@ end
 -- m: #(<Q1*S1*Q1*S1*[ED]>)*
 -- w: (S1*)+#Q1*(S1*)+
 -- f: S1*#
--- r: #
--- e: #S1*
+-- r: #S1*
 ---------------------------------------
 
 -- Copy state to f
@@ -252,8 +246,7 @@ end
 -- m: TR*m1#m2TR*
 -- w: #(S1*)+Q1*(S1*)+
 -- f: S1*#Q1*S1*
--- r: #
--- e: #S1*
+-- r: #S1*
 ---------------------------------------
 
 -- Find next transition
@@ -315,44 +308,33 @@ function q17a()
     end
 end
 
--- Go to end of transition
+-- Find movement
 function q18()
-    if m == '>' then
-        left(m)
+    if m == 'D' then
         goto q19
+    elseif m == 'E' then
+        goto q21a
     else
         right(m)
     end
 end
 
--- Check movement
-function q19()
-    if m == 'D' then
-        goto q20a
-    elseif m == 'E' then
-        goto q21a
-    end
-end
-
 ---------------------------------------
 -- TR = <Q1*S1*Q1*S1*[ED]>
+-- a . b = S1*
 --
 -- m: TR*<Q1*S1*Q1*S1*#D>TR*
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
--- r: #
--- e: #S1*
+-- r: a#b
 ---------------------------------------
 
--- Move e to r
-function q20a()
-    if e == nil then
-        goto q20b
+-- Go to the end of r
+function q19()
+    if r == nil then
+        goto q20a
     else
-        r = e
-        e = nil
         right(r)
-        right(e)
     end
 end
 
@@ -363,16 +345,15 @@ end
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
 -- r: S1*#
--- e: #
 ---------------------------------------
 
 -- Go to the beggining of S in m
-function q20b()
+function q20a()
     if m == 'S' then
         r = m
         right(r)
         right(m)
-        goto q20c
+        goto q20b
     else
         left(m)
     end
@@ -385,17 +366,16 @@ end
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
 -- r: S1*S#
--- e: #
 ---------------------------------------
 
 -- Copy 1s from m to r until not 1
-function q20c()
+function q20b()
     if m == '1' then
         r = m
         right(r)
         right(m)
     else
-        goto q20d
+        goto q20c
     end
 end
 
@@ -406,16 +386,15 @@ end
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
 -- r: S1*S1*#
--- e: #
 ---------------------------------------
 
 -- Go to the beggining of Q in m
-function q20d()
+function q20c()
     if m == 'Q' then
         r = m
         right(r)
         right(m)
-        goto q20e
+        goto q20d
     else
         left(m)
     end
@@ -428,11 +407,10 @@ end
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
 -- r: S1*S1*Q#
--- e: #
 ---------------------------------------
 
 -- Copy 1s from m to r until not 1
-function q20e()
+function q20d()
     if m == '1' then
         r = m
         right(r)
@@ -449,19 +427,42 @@ end
 -- m: TR*<Q1*S1*Q1*S1*#E>TR*
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
--- r: #
--- e: #S1*
+-- r: #S1*
 ---------------------------------------
 
--- Go to Q in m
+-- Find previous S in m
 function q21a()
+    if m == 'S' then
+        left(m)
+        left(r)
+        goto q21b
+    else
+        left(m)
+    end
+end
+
+---------------------------------------
+-- TR = <Q1*S1*Q1*S1*[ED]>
+-- a . b = Q1*
+-- b <> empty
+--
+-- m: TR*<Q1*S1*a#bS1*E>TR*
+-- w: #(S1*)+Q1*(S1*)+
+-- f: #S1*Q1*S1*
+-- r: #1*S1*
+---------------------------------------
+
+-- Copy m to r until 'Q'
+function q21b()
     if m == 'Q' then
         r = m
         right(m)
         right(r)
-        goto q21b
-    else
+        goto q21c
+    elseif m == '1' then
+        r = m
         left(m)
+        left(r)
     end
 end
 
@@ -471,40 +472,36 @@ end
 -- m: TR*<Q1*S1*Q#1*S1*E>TR*
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
--- r: Q#
--- e: #S1*
+-- r: #Q1*S1*
 ---------------------------------------
 
--- Copy m to r until 'S'
-function q21b()
-    if m == '1' then
-        r = m
-        right(m)
-        right(r)
+-- Go to the end of r
+function q21c()
+    if r == nil then
+        goto q21d
     else
-        goto q21c
+        right(r)
     end
 end
 
 ---------------------------------------
 -- TR = <Q1*S1*Q1*S1*[ED]>
 --
--- m: TR*<Q1*S1*Q1*#S1*E>TR*
+-- m: TR*<Q1*S1*Q1*#1*S1*E>TR*
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
--- r: Q1*#
--- e: #S1*
+-- r: Q1*S1*#
 ---------------------------------------
 
--- Move e to r
-function q21c()
-    if e == nil then
-        goto q21d
-    else
-        r = e
-        e = nil
+-- Go to S in m and copy it to r
+function q21d()
+    if m == 'S' then
+        r = m
+        right(m)
         right(r)
-        right(e)
+        goto q21e
+    else
+        right(m)
     end
 end
 
@@ -515,12 +512,11 @@ end
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
 -- r: Q1*S1*#
--- e: #
 ---------------------------------------
 
--- Copy m to r until not S or 1
-function q21d()
-    if m == 'S' or m == '1' then
+-- Copy 1s from m to r
+function q21e()
+    if m == '1' then
         r = m
         right(m)
         right(r)
@@ -537,7 +533,6 @@ end
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
 -- r: ([QS]1*)*#[QS1]
--- e: #
 ---------------------------------------
 
 -- Go to the start of r
@@ -557,7 +552,6 @@ end
 -- w: #(S1*)+Q1*(S1*)+
 -- f: #S1*Q1*S1*
 -- r: #([QS]1*)*
--- e: #
 ---------------------------------------
 
 -- Match f in w and replace it with r
@@ -768,7 +762,6 @@ end
 -- w: (S1*)+Q#1(S1*)*
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Clean m
@@ -786,7 +779,6 @@ end
 -- w: (S1*)+Q#1(S1*)*
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Go to the start of w
@@ -804,7 +796,6 @@ end
 -- w: #(S1*)*(Q1)?(S1*)*
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Move w to m, ignoring 'Q1'
@@ -829,7 +820,6 @@ end
 -- w: #1(S1*)*
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Remove 1
@@ -844,7 +834,6 @@ end
 -- w: #
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 -- Go to the start of m
@@ -862,7 +851,6 @@ end
 -- w: #
 -- f: #
 -- r: #
--- e: #
 ---------------------------------------
 
 function halt() end
