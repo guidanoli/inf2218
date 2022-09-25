@@ -29,9 +29,28 @@ static void print_direction(enum tm_ast_direction dir)
     printf("%s", direction_names[dir]);
 }
 
-static void tm_ast_vm_jff_aux2(struct vm_t* vm)
+static bool nothing_changed(struct vm_t* vm)
+{
+    if (vm->curr_state != vm->next_state)
+        return false;
+
+    for (int i = 0; i < vm->num_tapes; ++i) {
+        if (vm->curr_tapes[i] != vm->next_tapes[i])
+            return false;
+        if (vm->next_moves[i] != DIRECTION_STOP)
+            return false;
+    }
+
+    return true;
+}
+
+// Returns true if transition was generated
+static bool tm_ast_vm_jff_aux2(struct vm_t* vm)
 {
     tm_vm_run(vm);
+
+    if (nothing_changed(vm))
+        return false;
 
     printf("\t\t<transition>\n");
     printf("\t\t\t<from>%d</from>\n", vm->curr_state->index);
@@ -48,37 +67,47 @@ static void tm_ast_vm_jff_aux2(struct vm_t* vm)
         printf("</move>\n");
     }
     printf("\t\t</transition>\n");
+
+    return true;
 }
 
 // nested loop with recursion
-static void tm_ast_vm_jff_aux1(struct vm_t* vm, struct tm_ast_tape* tape)
+// Returns number of ignored transitions
+static int tm_ast_vm_jff_aux1(struct vm_t* vm, struct tm_ast_tape* tape)
 {
     if (tape == NULL) {
-        tm_ast_vm_jff_aux2(vm);
+        if (tm_ast_vm_jff_aux2(vm)) {
+            return 0;
+        } else {
+            return 1;
+        }
     } else {
+        int ignored = 0;
         struct tm_ast_symbol* symbol = tape->symbol_list->first;
         while (1) {
             char c = symbol == NULL ? '\0' : symbol->symbol;
             vm->curr_tapes[tape->index] = c;
-            tm_ast_vm_jff_aux1(vm, tape->next);
+            ignored += tm_ast_vm_jff_aux1(vm, tape->next);
             if (symbol == NULL) {
                 break;
             } else {
                 symbol = symbol->next;
             }
-        };
+        }
+        return ignored;
     }
 }
 
-static void tm_ast_transition_jff(struct tm_ast_state* ast, struct tm_ast_tape* tape, struct vm_t* vm)
+// Return number of ignored transitions
+static int tm_ast_transition_jff(struct tm_ast_state* ast, struct tm_ast_tape* tape, struct vm_t* vm)
 {
     // Final states cannot have transitions
     if (ast->next == NULL) {
-        return;
+        return 0;
     }
 
     vm->curr_state = ast;
-    tm_ast_vm_jff_aux1(vm, tape);
+    return tm_ast_vm_jff_aux1(vm, tape);
 }
 
 static void tm_ast_state_jff(struct tm_ast_state* ast)
@@ -95,7 +124,7 @@ static void tm_ast_state_jff(struct tm_ast_state* ast)
     printf("\t\t</state>\n");
 }
 
-static void tm_ast_state_list_jff(struct tm_ast_state_list* ast, struct tm_ast_tape* tape, struct vm_t* vm)
+static void tm_ast_state_list_jff(struct tm_ast_state_list* ast, struct tm_ast_tape* tape, struct vm_t* vm, bool debug)
 {
     struct tm_ast_state* s;
     printf("\t\t<!--The list of states.-->\n");
@@ -104,11 +133,14 @@ static void tm_ast_state_list_jff(struct tm_ast_state_list* ast, struct tm_ast_t
     }
     printf("\t\t<!--The list of transitions.-->\n");
     for (s = ast->first; s != NULL; s = s->next) {
-        tm_ast_transition_jff(s, tape, vm);
+        int ignored = tm_ast_transition_jff(s, tape, vm);
+        if (debug && ignored != 0) {
+            fprintf(stderr, "Debug: Ignored %d transitions from state %s\n", ignored, s->name);
+        }
     }
 }
 
-void tm_ast_program_jff(struct tm_ast_program* ast)
+void tm_ast_program_jff(struct tm_ast_program* ast, bool debug)
 {
     struct vm_t vm;
     tm_vm_init(ast, &vm);
@@ -119,7 +151,7 @@ void tm_ast_program_jff(struct tm_ast_program* ast)
     printf("\t<type>turing</type>\n");
     printf("\t<tapes>%d</tapes>\n", vm.num_tapes);
     printf("\t<automaton>\n");
-    tm_ast_state_list_jff(ast->state_list, ast->tape_list->first, &vm);
+    tm_ast_state_list_jff(ast->state_list, ast->tape_list->first, &vm, debug);
     printf("\t</automaton>\n");
     printf("</structure>\n");
 
