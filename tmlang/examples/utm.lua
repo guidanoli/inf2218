@@ -1,4 +1,4 @@
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 -- Universal Turing Machine
 --
 -- In the tape diagram, {} represents where the cursor can be
@@ -19,10 +19,10 @@ r = tape{'Q', 'S', '1'}
 --------------------------------------------------------------------------------
 
 -- Go to the end of m
-function init1()
+function q1()
     if m == nil then
         left(m)
-        goto init2
+        goto q2
     else
         right(m)
     end
@@ -38,12 +38,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Move m to w until '$'
-function init2()
+function q2()
     if m == '$' then
         m = nil
         w = 'Q'
         left(m)
-        goto q1
+        goto q3
     elseif m == 'S' or m == '1' then
         w = m
         m = nil
@@ -61,10 +61,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the start of m
-function q1()
+function q3()
     if m == nil then
         right(m)
-        goto q3
+        goto q4
     else
         left(m)
     end
@@ -79,12 +79,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Check left symbol
-function q3()
+function q4()
     if w == 'Q' then
         left(w)
-        goto q4
+        goto q5
     elseif w == 'S' then
-        goto q5a
+        goto q6
     end
 end
 
@@ -96,9 +96,9 @@ end
 --------------------------------------------------------------------------------
 
 -- Write left symbol
-function q4()
+function q5()
     w = 'S'
-    goto q5a
+    goto q6
 end
 
 --------------------------------------------------------------------------------
@@ -109,10 +109,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Find cursor
-function q5a()
+function q6()
     if w == 'Q' then
         right(w)
-        goto q5b
+        goto q7
     else
         right(w)
     end
@@ -128,12 +128,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Check if final state was reached (1/2)
-function q5b()
+function q7()
     if w == '1' then
         right(w)
-        goto q5c
+        goto q8
     elseif w == 'S' or w == nil then
-        goto q6
+        goto q9
     end
 end
 
@@ -147,13 +147,13 @@ end
 --------------------------------------------------------------------------------
 
 -- Check if final state was reached (2/2)
-function q5c()
+function q8()
     if w == nil or w == 'S' then
         left(w)
-        goto f1
+        goto q51
     elseif w == '1' then
         right(w)
-        goto q6
+        goto q9
     end
 end
 
@@ -167,14 +167,14 @@ end
 --------------------------------------------------------------------------------
 
 -- Check right symbol
-function q6()
+function q9()
     if w == 'S' then
         left(w)
-        goto q7
+        goto q10
     elseif w == nil then
         w = 'S'
         left(w)
-        goto q7
+        goto q10
     elseif w == '1' then
         right(w)
     end
@@ -189,10 +189,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Find cursor
-function q7()
+function q10()
     if w == 'Q' then
         left(w)
-        goto q8
+        goto q11
     elseif w == '1' then
         left(w)
     end
@@ -207,11 +207,11 @@ end
 --------------------------------------------------------------------------------
 
 -- Copy left symbol to r and f
-function q8()
+function q11()
     if w == 'S' then
         f = w
         r = w
-        goto q9
+        goto q12
     elseif w == '1' then
         f = w
         r = w
@@ -231,9 +231,9 @@ end
 --------------------------------------------------------------------------------
 
 -- Find cursor
-function q9()
+function q12()
     if w == 'Q' then
-        goto q9a
+        goto q13
     else
         right(w)
     end
@@ -249,9 +249,9 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the end of f
-function q9a()
+function q13()
     if f == nil then
-        goto q10
+        goto q14
     else
         right(f)
     end
@@ -268,12 +268,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Copy state to f
-function q10()
+function q14()
     if w == 'S' then
         f = w
         right(w)
         right(f)
-        goto q11
+        goto q15
     elseif w == 'Q' or w == '1' then
         f = w
         right(w)
@@ -291,11 +291,11 @@ end
 --------------------------------------------------------------------------------
 
 -- Copy symbol to f
-function q11()
+function q15()
     if w == 'S' or w == nil then
         left(w)
         left(f)
-        goto q12
+        goto q16
     elseif w == '1' then
         f = w
         right(w)
@@ -312,10 +312,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to start of w
-function q12()
+function q16()
     if w == nil then
         right(w)
-        goto q13
+        goto q17
     else
         left(w)
     end
@@ -329,10 +329,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to start of f
-function q13()
+function q17()
     if f == nil then
         right(f)
-        goto q13a
+        goto q18
     else
         left(f)
     end
@@ -346,9 +346,9 @@ end
 --------------------------------------------------------------------------------
 
 -- Find Q in f
-function q13a()
+function q18()
     if f == 'Q' then
-        goto q14
+        goto q19
     else
         right(f)
     end
@@ -362,10 +362,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Find next transition
-function q14()
+function q19()
     if m == '<' then
         right(m)
-        goto q15
+        goto q20
     else
         right(m)
     end
@@ -379,13 +379,13 @@ end
 --------------------------------------------------------------------------------
 
 -- Match Q
-function q15()
+function q20()
     if m == 'Q' and f == 'Q' then
         right(m)
         right(f)
-        goto q16
+        goto q21
     else
-        goto q13
+        goto q17
     end
 end
 
@@ -397,16 +397,16 @@ end
 --------------------------------------------------------------------------------
 
 -- Match Q number and S
-function q16()
+function q21()
     if m == '1' and f == '1' then
         right(m)
         right(f)
     elseif m == 'S' and f == 'S' then
         right(m)
         right(f)
-        goto q17
+        goto q22
     else
-        goto q13
+        goto q17
     end
 end
 
@@ -418,16 +418,16 @@ end
 --------------------------------------------------------------------------------
 
 -- Match S number and end
-function q17()
+function q22()
     if m == '1' and f == '1' then
         right(m)
         right(f)
     elseif m == 'Q' and f == nil then
         left(f)
-        goto q17a
+        goto q23
     else
         left(f)
-        goto q13
+        goto q17
     end
 end
 
@@ -439,10 +439,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the start of f
-function q17a()
+function q23()
     if f == nil then
         right(f)
-        goto q18
+        goto q24
     else
         left(f)
     end
@@ -456,11 +456,11 @@ end
 --------------------------------------------------------------------------------
 
 -- Find movement
-function q18()
+function q24()
     if m == 'D' then
-        goto q19
+        goto q25
     elseif m == 'E' then
-        goto q21a
+        goto q30
     else
         right(m)
     end
@@ -474,9 +474,9 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the end of r
-function q19()
+function q25()
     if r == nil then
-        goto q20a
+        goto q26
     else
         right(r)
     end
@@ -490,12 +490,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the beggining of S in m
-function q20a()
+function q26()
     if m == 'S' then
         r = m
         right(r)
         right(m)
-        goto q20b
+        goto q27
     elseif m == 'D' or m == '1' then
         left(m)
     end
@@ -509,13 +509,13 @@ end
 --------------------------------------------------------------------------------
 
 -- Copy 1s from m to r until D
-function q20b()
+function q27()
     if m == '1' then
         r = m
         right(r)
         right(m)
     elseif m == 'D' then
-        goto q20c
+        goto q28
     end
 end
 
@@ -527,12 +527,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the beggining of Q in m
-function q20c()
+function q28()
     if m == 'Q' then
         r = m
         right(r)
         right(m)
-        goto q20d
+        goto q29
     elseif m == '1' or m == 'S' or m == 'D' then
         left(m)
     end
@@ -546,14 +546,14 @@ end
 --------------------------------------------------------------------------------
 
 -- Copy 1s from m to r until S
-function q20d()
+function q29()
     if m == '1' then
         r = m
         right(r)
         right(m)
     elseif m == 'S' then
         left(r)
-        goto q22
+        goto q35
     end
 end
 
@@ -565,11 +565,11 @@ end
 --------------------------------------------------------------------------------
 
 -- Find previous S in m
-function q21a()
+function q30()
     if m == 'S' then
         left(m)
         left(r)
-        goto q21b
+        goto q31
     elseif m == 'E' or m == '1' then
         left(m)
     end
@@ -583,12 +583,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Copy m to r until 'Q'
-function q21b()
+function q31()
     if m == 'Q' then
         r = m
         right(m)
         right(r)
-        goto q21c
+        goto q32
     elseif m == '1' then
         r = m
         left(m)
@@ -605,9 +605,9 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the end of r
-function q21c()
+function q32()
     if r == nil then
-        goto q21d
+        goto q33
     elseif r == '1' or r == 'S' then
         right(r)
     end
@@ -621,12 +621,12 @@ end
 --------------------------------------------------------------------------------
 
 -- Find the next S in m and copy it in r
-function q21d()
+function q33()
     if m == 'S' then
         r = m
         right(m)
         right(r)
-        goto q21e
+        goto q34
     elseif m == '1' then
         right(m)
     end
@@ -640,14 +640,14 @@ end
 --------------------------------------------------------------------------------
 
 -- Copy 1s from m to r
-function q21e()
+function q34()
     if m == '1' then
         r = m
         right(m)
         right(r)
     elseif m == 'E' then
         left(r)
-        goto q22
+        goto q35
     end
 end
 
@@ -659,10 +659,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the start of r
-function q22()
+function q35()
     if r == nil then
         right(r)
-        goto m1
+        goto q36
     else
         left(r)
     end
@@ -681,18 +681,18 @@ end
 --------------------------------------------------------------------------------
 
 -- Match f in w and replace it with r
-function m1()
+function q36()
     if f == nil then
         if w == nil then
-            goto m4
+            goto q39
         else
             if r == nil then
                 left(w)
                 left(r)
-                goto m8
+                goto q43
             else
                 right(f)
-                goto m12
+                goto q47
             end
         end
     elseif w == f then
@@ -704,17 +704,17 @@ function m1()
         left(w)
         left(f)
         left(r)
-        goto m2
+        goto q37
     end
 end
 
 -- Undo replacement of r in w
-function m2()
+function q37()
     if f == nil then
         right(w)
         right(f)
         right(r)
-        goto m3
+        goto q38
     else
         w = f
         left(w)
@@ -724,15 +724,15 @@ function m2()
 end
 
 -- Skip one letter of w
-function m3()
+function q38()
     right(w)
-    goto m1
+    goto q36
 end
 
 -- Copy r into w
-function m4()
+function q39()
     if r == nil then
-        goto m5
+        goto q40
     else
         w = r
         right(w)
@@ -741,7 +741,7 @@ function m4()
 end
 
 -- Find the last letter of w, f and r
-function m5()
+function q40()
     if w == nil then
         left(w)
     else
@@ -751,27 +751,27 @@ function m5()
             if r == nil then
                 left(r)
             else
-                goto m6
+                goto q41
             end
         end
     end
 end
 
 -- Find the first letter of w
-function m6()
+function q41()
     if w == nil then
         right(w)
-        goto m7
+        goto q42
     else
         left(w)
     end
 end
 
 -- Erase f and r from right to left
-function m7()
+function q42()
     if f == nil then
         if r == nil then
-            goto q1
+            goto q3
         else
             r = nil
             left(r)
@@ -783,22 +783,22 @@ function m7()
 end
 
 -- Check if there is a gap in w
-function m8()
+function q43()
     if w == nil then
         right(w)
         right(f)
-        goto m9
+        goto q44
     else
-        goto m5
+        goto q40
     end
 end
 
 -- Move w to f
-function m9()
+function q44()
     if w == nil then
         left(w)
         left(f)
-        goto m10
+        goto q45
     else
         f = w
         w = nil
@@ -808,14 +808,14 @@ function m9()
 end
 
 -- Find first blank after w and first letter of f
-function m10()
+function q45()
     if w == nil then
         left(w)
     else
         if f == nil then
             right(w)
             right(f)
-            goto m11
+            goto q46
         else
             left(f)
         end
@@ -823,9 +823,9 @@ function m10()
 end
 
 -- Move f to w
-function m11()
+function q46()
     if f == nil then
-        goto m5
+        goto q40
     else
         w = f
         f = nil
@@ -835,9 +835,9 @@ function m11()
 end
 
 -- Copy w to f and r to w from left to right
-function m12()
+function q47()
     if w == nil and r == nil then
-        goto m13
+        goto q48
     else
         f = w
         w = r
@@ -848,7 +848,7 @@ function m12()
 end
 
 -- Find first blank after w and last letter of f
-function m13()
+function q48()
     if w == nil then
         left(w)
     else
@@ -856,25 +856,25 @@ function m13()
             left(f)
         else
             right(w)
-            goto m14
+            goto q49
         end
     end
 end
 
 -- Find first letter of f
-function m14()
+function q49()
     if f == nil then
         right(f)
-        goto m15
+        goto q50
     else
         left(f)
     end
 end
 
 -- Move f to w from left to right
-function m15()
+function q50()
     if f == nil then
-        goto m5
+        goto q40
     else
         w = f
         f = nil
@@ -903,9 +903,9 @@ end
 --------------------------------------------------------------------------------
 
 -- Clean m
-function f1()
+function q51()
     if m == nil then
-        goto f2
+        goto q52
     else
         m = nil
         right(m)
@@ -924,10 +924,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the start of w
-function f2()
+function q52()
     if w == nil then
         right(w)
-        goto f3
+        goto q53
     else
         left(w)
     end
@@ -946,14 +946,14 @@ end
 --------------------------------------------------------------------------------
 
 -- Move w to m, ignoring 'Q1'
-function f3()
+function q53()
     if w == nil then
         left(m)
-        goto f5
+        goto q55
     elseif w == 'Q' then
         w = nil
         right(w)
-        goto f4
+        goto q54
     else
         m = w
         w = nil
@@ -970,10 +970,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Remove 1
-function f4()
+function q54()
     w = nil
     right(w)
-    goto f3
+    goto q53
 end
 
 --------------------------------------------------------------------------------
@@ -984,10 +984,10 @@ end
 --------------------------------------------------------------------------------
 
 -- Go to the start of m
-function f5()
+function q55()
     if m == nil then
         right(m)
-        goto halt
+        goto q56
     else
         left(m)
     end
@@ -1000,4 +1000,4 @@ end
 -- r: { }
 --------------------------------------------------------------------------------
 
-function halt() end
+function q56() end
