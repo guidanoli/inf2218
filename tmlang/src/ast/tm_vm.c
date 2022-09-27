@@ -124,6 +124,7 @@ void tm_vm_run(struct vm_t* vm)
 void tm_vm_init(struct tm_ast_program* ast, struct vm_t* vm)
 {
     int num_tapes = ast->tape_list->last->index + 1;
+    // TODO: num_tapes > 0
     if (num_tapes > 5) {
         fprintf(stderr, "JFLAP 7.1 doesn't support Turing Machines with more than 5 tapes\n");
         exit(1);
